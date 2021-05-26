@@ -46,3 +46,20 @@ def walk_dir(tar_dir, file_ext, callback):
             name, ext = os.path.splitext(file)
             if ext == file_ext:
                 callback(os.path.join(root, file), root, name, ext)
+
+
+def cal_files(tar_dir, file_ext):
+    """
+    统计目录下指定类型文件的数量。递归
+    :param tar_dir: 目录
+    :param file_ext: 文件名后缀，如".wav"
+    :return: 数量
+    """
+    count = 0
+    for root, dirs, files in os.walk(tar_dir, topdown = False, followlinks = True):
+        for file in files:
+            name, ext = os.path.splitext(file)
+            if ext == file_ext:
+                count += 1
+
+    return count

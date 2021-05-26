@@ -4,6 +4,7 @@ import numpy as np
 import random
 import time
 import utils.file_utils as fu
+import utils.time_utils as tu
 
 
 class NoiseMaker:
@@ -16,11 +17,12 @@ class NoiseMaker:
         构造方法
         :param noise_dir: 噪声的wav文件所载的目录。会遍历目录、子目录下的所有wav文件
         """
+        self.index = 0
         self.noise_dir = noise_dir
         self.noise_data_cache_map = {}  # 噪音文件缓存
         self.noise_file_path_list = []  # 噪音文件路径
         self.audio_ext = ".wav"  # 音频文件扩展名
-
+        self.amount = 0
         self._get_noise_file_path_list()
 
     def _get_noise_file_path_list(self):
@@ -85,6 +87,9 @@ class NoiseMaker:
         :param export: 是否返回添加噪声的音频文件。True，返回；False，不返回
         :return: 如果export为True，返回添加噪声的音频文件
         """
+        assert os.path.exists(clear_path)
+        fu.exists_or_create(out_dir)
+
         # 随机获取一个音频文件信息
         noise_frames, noise_wave_data = self._get_random_noise()
 
@@ -142,8 +147,19 @@ class NoiseMaker:
         assert os.path.exists(clear_dir)
         fu.exists_or_create(out_dir)
 
+        start_time = time.time()
+        print("——————————开始——————————" + tu.cur_time())
+
         # 遍历目标文件
+        self.index = 0
+        self.amount = fu.cal_files(clear_dir, self.audio_ext)
+
         def when_find(path, root, name, ext):
+            self.index += 1
             self.deal_file(path, out_dir)
+            print('\r' + '[进度]:%s%.2f%%' % ('>' * int(self.index * 50 / self.amount), float(self.index / self.amount * 100)), end = ' ')
 
         fu.walk_dir(clear_dir, self.audio_ext, when_find)
+        print("——————————结束——————————" + tu.cur_time())
+        print("耗时：" + tu.diff(time.time() - start_time))
+        print("文件总数：")
