@@ -152,7 +152,9 @@ class NoiseMaker:
 
         # 遍历目标文件
         self.index = 0
+        print("读取文件总数...")
         self.amount = fu.cal_files(clear_dir, self.audio_ext)
+        print("文件总数：%d" + self.amount)
 
         def when_find(path, root, name, ext):
             self.index += 1
