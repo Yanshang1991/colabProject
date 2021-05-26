@@ -21,12 +21,16 @@ def cp(src, tar_dir):
     :param tar_dir: 目标路径
     """
     assert os.path.exists(src)  # 判断文件存在
-    exists_or_create(tar_dir)
     tar_dir = os.path.join(tar_dir, os.path.dirname(src))
-    os.makedirs(tar_dir)
+    os.makedirs(tar_dir, exist_ok= True)
 
-    # adding exception handling
     try:
         shutil.copy(src, tar_dir)
     except IOError as e:
         print("Unable to copy file. %s" % e)
+
+
+
+
+
+
