@@ -28,7 +28,7 @@ class NoiseMaker:
         读取噪声目录下的wav文件，并存入noise_file_path_list中
         """
 
-        def when_find_ext(path):
+        def when_find_ext(path, root, name, ext):
             self.noise_file_path_list.append(path)
 
         fu.walk_dir(self.noise_dir, self.audio_ext, callback = when_find_ext)
