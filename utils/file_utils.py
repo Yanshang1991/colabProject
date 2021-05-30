@@ -55,7 +55,7 @@ def cpdir(src: str, dst_dir):
     :param dst_path:
     :return:
     """
-    print("开始复制，开始时间：%d" % tu.cur_time())
+    print("开始复制，开始时间：%s" % tu.cur_time())
     start_time = time.time()
     sum = cal_files(tar_dir = src)
     print("文件总数：%d" % sum)
