@@ -148,13 +148,12 @@ class NoiseMaker:
         fu.exists_or_create(out_dir)
 
         start_time = time.time()
-        print("——————————开始——————————" + tu.cur_time())
+        print("——————————开始—————————— %s" % tu.cur_time())
 
         # 遍历目标文件
         self.index = 0
         print("读取文件总数...")
         self.amount = fu.cal_files(clear_dir, self.audio_ext)
-        print("文件总数：%d" + self.amount)
 
         def when_find(path, root, name, ext):
             self.index += 1
@@ -162,6 +161,5 @@ class NoiseMaker:
             print('\r' + '[进度]:%s%.2f%%' % ('>' * int(self.index * 50 / self.amount), float(self.index / self.amount * 100)), end = ' ')
 
         fu.walk_dir(clear_dir, self.audio_ext, when_find)
-        print("——————————结束——————————" + tu.cur_time())
+        print("——————————结束—————————— %s" % tu.cur_time())
         print("耗时：" + tu.diff(time.time() - start_time))
-        print("文件总数：")

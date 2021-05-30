@@ -58,7 +58,6 @@ def cpdir(src: str, dst_dir):
     print("开始复制，开始时间：%s" % tu.cur_time())
     start_time = time.time()
     sum = cal_files(tar_dir = src)
-    print("文件总数：%d" % sum)
 
     src = src.rstrip("/")  # 移除目录末尾的/
     src_dir = os.path.dirname(src)
@@ -86,8 +85,13 @@ def walk_dir(tar_dir, file_ext, callback):
     :param file_ext: 要查找的扩展名，str，如".wav"
     :param callback: 回调。lambda
     """
+    index = 0
     for root, dirs, files in os.walk(tar_dir, topdown = False, followlinks = True):
         for file in files:
             name, ext = os.path.splitext(file)
             if ext is None or ext == file_ext:
+                index += 1
+                print('\r' + '[文件数量] %d' % index)
                 callback(os.path.join(root, file), root, name, ext)
+
+
