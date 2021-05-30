@@ -72,7 +72,7 @@ def cpdir(src: str, dst_dir):
             # 如果总数大于200个，显示复制进度
             if sum > 200:
                 print('\r' + '    [进度]:%s %.2f%%    耗时 %d' % ('>' * int(index * 50 / sum), float(index / sum * 100), tu.diff(time.time() - start_time)), end = ' ')
-    print("复制完成，结束时间：%d，耗时：%d" % (tu.cur_time(), tu.diff(time.time() - start_time)))
+    print("复制完成，结束时间：%d，耗时：%s" % (tu.cur_time(), tu.diff(time.time() - start_time)))
 
 
 def mv(src, tar_dir):
