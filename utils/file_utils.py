@@ -64,7 +64,7 @@ def cpdir(src: str, dst_dir):
         files_dir = os.path.join(dst_dir, pure_path)
         for file in files:
             cp(os.path.join(root, file), os.path.join(files_dir, file))
-
+            index += 1
             # 如果总数大于200个，显示复制进度
             if sum > 200:
                 print('\r' + '[进度]:%s%.2f%%' % ('>' * int(index * 50 / sum), float(index / sum * 100)), end = ' ')
