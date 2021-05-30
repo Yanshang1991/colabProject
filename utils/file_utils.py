@@ -24,7 +24,7 @@ def cp(src_path, dst_path):
     exists_or_create(os.path.dirname(dst_path))
 
     try:
-        shutil.copytree(src_path, dst_path)
+        shutil.copyfile(src_path, dst_path)
     except IOError as e:
         print("Unable to copy file. %s" % e)
 
