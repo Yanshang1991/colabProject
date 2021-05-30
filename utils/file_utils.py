@@ -25,7 +25,7 @@ def cp(src, tar_dir):
     os.makedirs(tar_dir, exist_ok = True)
 
     try:
-        shutil.copyfile(src, tar_dir)
+        shutil.copy(src, tar_dir)
     except IOError as e:
         print("Unable to copy file. %s" % e)
 
