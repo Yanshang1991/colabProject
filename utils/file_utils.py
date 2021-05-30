@@ -19,6 +19,7 @@ def cal_files(tar_dir, file_ext = None):
             name, ext = os.path.splitext(file)
             if file_ext is None or ext == file_ext:
                 count += 1
+                print('\r' + '[文件数量] %d' % count, end = ' ')
 
     return count
 
@@ -85,13 +86,8 @@ def walk_dir(tar_dir, file_ext, callback):
     :param file_ext: 要查找的扩展名，str，如".wav"
     :param callback: 回调。lambda
     """
-    index = 0
     for root, dirs, files in os.walk(tar_dir, topdown = False, followlinks = True):
         for file in files:
             name, ext = os.path.splitext(file)
             if ext is None or ext == file_ext:
-                index += 1
-                print('\r' + '[文件数量] %d' % index)
                 callback(os.path.join(root, file), root, name, ext)
-
-
