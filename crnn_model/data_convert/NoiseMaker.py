@@ -157,7 +157,6 @@ class NoiseMaker:
 
         def when_find(path, root, name, ext):
             self.index += 1
-            print(path)
             self.deal_file(path, out_dir)
             print('\r' + '[进度]:%s%.2f%%' % ('>' * int(self.index * 50 / self.amount), float(self.index / self.amount * 100)), end = ' ')
 
