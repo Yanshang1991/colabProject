@@ -14,18 +14,18 @@ def exists_or_create(dir):
         os.mkdir(dir)
 
 
-def cp(src, tar_dir):
+def cp(file_path, tar_dir):
     """
     复制文件
     :param src: 资源路径
     :param tar_dir: 目标路径
     """
-    assert os.path.exists(src)  # 判断文件存在
+    assert os.path.exists(file_path)  # 判断文件存在
     # tar_dir = os.path.join(tar_dir, os.path.basename(src))
     os.makedirs(tar_dir, exist_ok = True)
 
     try:
-        shutil.copy(src, tar_dir)
+        shutil.copyfile(file_path, tar_dir)
     except IOError as e:
         print("Unable to copy file. %s" % e)
 
