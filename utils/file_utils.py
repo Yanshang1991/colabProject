@@ -21,7 +21,7 @@ def cp(src, tar_dir):
     :param tar_dir: 目标路径
     """
     assert os.path.exists(src)  # 判断文件存在
-    tar_dir = os.path.join(tar_dir, os.path.basename(src))
+    # tar_dir = os.path.join(tar_dir, os.path.basename(src))
     os.makedirs(tar_dir, exist_ok = True)
 
     try:
