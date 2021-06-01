@@ -149,8 +149,8 @@ if __name__ == '__main__':
 
     parser.add_argument('--nh', type = int, default = 256, help = 'size of the lstm hidden state')
     parser.add_argument('--nepoch', type = int, default = 100, help = 'number of epochs to train for')
-    parser.add_argument('--train_dir', default = r'/content/drive/MyDrive/Dataset/audio/train/baker', help = 'path of train data')
-    parser.add_argument('--val_dir', default = r'/content/drive/MyDrive/Dataset/audio/train/baker', help = 'path of val data')
+    parser.add_argument('--train_dir', default = r'/content/dataset', help = 'path of train data')
+    parser.add_argument('--val_dir', default = r'/content/dataset', help = 'path of val data')
 
     # parser.add_argument('--wrdtxtfile', default = r'dataset/transcript/aishell_transcript_v0.8.txt', help = 'path of val data')
     parser.add_argument('--wrdtxtfile', default = r'/content/drive/MyDrive/Dataset/dataset_crnn/hanzi.txt', help = 'path of val data')

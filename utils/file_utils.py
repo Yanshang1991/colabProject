@@ -8,7 +8,9 @@ import zipfile
 
 
 def print_process(name, cur_size, max_size, time_cost):
-    print('\r[%s]: %s %.2f%%  cur:%d, total:%d  耗时: %s' % (name, '>' * int(cur_size * 50 / max_size), float(cur_size / max_size * 100), cur_size, max_size, time_cost), end = ' ')
+    process = cur_size / max_size
+    print('\r[%s]: %s %.2f%%  cur:%d, total:%d, cost: %s , remain: %s' % (
+        name, '>' * int(process * 50), float(process * 100), cur_size, max_size, tu.diff(time_cost), tu.diff(time_cost / (1 - process))), end = ' ')
 
 
 def cal_files(tar_dir, file_exts = None):
@@ -68,7 +70,7 @@ def cp(src, dst_dir):
                 index += 1
                 # 如果总数大于200个，显示复制进度
                 if sum > 200:
-                    print_process("复制进度", index, sum, tu.diff(time.time() - start_time))
+                    print_process("复制进度", index, sum, time.time() - start_time)
         print("复制完成，结束时间：%s，耗时：%s" % (tu.cur_time(), tu.diff(time.time() - start_time)))
 
 
@@ -120,7 +122,7 @@ def zip_(zip_file_name, src, dst_dir = None, file_types = None):
                         filepath = os.path.join(root, file)
                         z.write(filepath)
                         index += 1
-                        print_process("压缩进度", index, count, tu.diff(time.time() - start_time))
+                        print_process("压缩进度", index, count, time.time() - start_time)
     print("完成压缩，\n%s，%s，总耗时：%s" % (src, tu.cur_time(), tu.diff(time.time() - start_time)))
 
 
@@ -151,5 +153,3 @@ def unzip(zip_file_path, dst = None):
     with zipfile.ZipFile(zip_file_path, 'r') as z:
         z.extractall(path = dst)
 
-
-unzip("aaa.zip")
