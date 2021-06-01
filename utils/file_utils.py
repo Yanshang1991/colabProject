@@ -13,6 +13,10 @@ def print_process(name, cur_size, max_size, time_cost):
         name, '>' * int(process * 50), float(process * 100), cur_size, max_size, tu.diff(time_cost), tu.diff(time_cost / (1 - process))), end = ' ')
 
 
+def exists(src):
+    assert os.path.exists(src)
+
+
 def cal_files(tar_dir, file_exts = None):
     """
     统计目录下指定类型文件的数量。递归
@@ -49,7 +53,9 @@ def cp(src, dst_dir, under_dir = False):
     :param tar_dir: 目标路径
     :param under_dir: 是否版本源目录；True，包含；False，只复制目录下的文件
     """
-    assert os.path.exists(src)  # 判断文件存在
+    exists(src)  # 判断文件存在
+    print("开始复制，开始时间：%s" % tu.cur_time())
+    start_time = time.time()
     if os.path.isfile(src):
         exists_or_create(os.path.dirname(dst_dir))
         try:
@@ -57,8 +63,6 @@ def cp(src, dst_dir, under_dir = False):
         except IOError as e:
             print("Unable to copy file. %s" % e)
     else:
-        print("开始复制，开始时间：%s" % tu.cur_time())
-        start_time = time.time()
         sum = cal_files(tar_dir = src)
 
         src = src.rstrip("/")  # 移除目录末尾的/
@@ -77,7 +81,8 @@ def cp(src, dst_dir, under_dir = False):
                 # 如果总数大于200个，显示复制进度
                 if sum > 200:
                     print_process("复制进度", index, sum, time.time() - start_time)
-        print("复制完成，结束时间：%s，耗时：%s" % (tu.cur_time(), tu.diff(time.time() - start_time)))
+    print("复制完成，结束时间：%s，耗时：%s" % (tu.cur_time(), tu.diff(time.time() - start_time)))
+
 
 def mv(src, tar_dir):
     shutil.move(src, tar_dir)
@@ -138,8 +143,8 @@ def zip_add(zip_file_path, src):
     :param src:
     :return:
     """
-    assert os.path.exists(zip_file_path)
-    assert os.path.exists(src)
+    exists(zip_file_path)
+    exists(src)
     if os.path.isfile(src):
         with zipfile.ZipFile(zip_file_path, 'a') as z:
             z.write(src)
@@ -153,8 +158,33 @@ def zip_add(zip_file_path, src):
 
 
 def unzip(zip_file_path, dst = None):
-    assert os.path.exists(zip_file_path)
-    exists_or_create(dst)
+    exists(zip_file_path)
     with zipfile.ZipFile(zip_file_path, 'r') as z:
+        if dst is None:
+            dst = os.path.dirname(zip_file_path)
+        else:
+            exists_or_create(dst)
         z.extractall(path = dst)
 
+unzip("./aaa/aaa.zip")
+
+def get_size(src):
+    """
+    统计文件大小
+    :param src:
+    :return:
+    """
+    if os.path.isfile(src):
+        count = 1
+        size = os.path.getsize(src)
+    else:
+        count = 0
+        size = 0
+        for root, dirs, files in os.walk(src, topdown = False, followlinks = True):
+            for file in files:
+                count += 1
+                size += os.path.getsize(os.path.join(root, file))
+    size = size / float(1024 * 1024)
+    size = round(size, 2)
+    print("scr: %s, size: %dMB, count: %d" % (src, size, count))
+    return size
