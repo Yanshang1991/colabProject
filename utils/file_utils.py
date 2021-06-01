@@ -168,8 +168,12 @@ def unzip(zip_file_path, dst = None):
         z.extractall(path = dst)
 
 
-def tar(src, dst_dir):
-    dst_path = os.path.join(dst_dir, os.path.split(src.rstrip("/"))[-1] + ".gz")
+def tar(src, dst_dir = None):
+    exists(src)
+    if dst_dir is None:
+        dst_dir = os.path.dirname(src.rstrip("/"))
+    name = os.path.split(src.rstrip("/"))[-1] + ".gz"
+    dst_path = os.path.join(dst_dir, name)
     with tarfile.open(dst_path, "w:gz") as t:
         # 创建压缩包
         for root, dir, files in os.walk(src, topdown = False):
@@ -178,11 +182,13 @@ def tar(src, dst_dir):
                 t.add(fullpath)
 
 
-def untar(tar_path, target_path):
-    with tarfile.open(tar_path, "r:gz") as tar:
-        file_names = tar.getnames()
+def untar(tar_path, dst_dir = None):
+    with tarfile.open(tar_path, "r:gz") as t:
+        file_names = t.getnames()
+        if dst_dir is None:
+            dst_dir = os.path.dirname(tar_path)
         for file_name in file_names:
-            tar.extract(file_name, target_path)
+            t.extract(file_name, dst_dir)
 
 
 def get_size(src):
