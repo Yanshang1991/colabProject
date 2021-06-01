@@ -8,7 +8,7 @@ import zipfile
 
 
 def print_process(name, cur_size, max_size, time_cost):
-    print('\r[%s]: %s %.2f%%    耗时: %s' % (name, '>' * int(cur_size * 50 / max_size), float(cur_size / max_size * 100), time_cost), end = ' ')
+    print('\r[%s]: %s %.2f%%  cur:%d, total:%d  耗时: %s' % (name, '>' * int(cur_size * 50 / max_size), float(cur_size / max_size * 100), cur_size, max_size, time_cost), end = ' ')
 
 
 def cal_files(tar_dir, file_exts = None):
