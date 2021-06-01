@@ -39,45 +39,37 @@ def exists_or_create(dir):
         os.makedirs(dir)
 
 
-def cp(src_path, dst_path):
+def cp(src, dst_dir):
     """
     复制文件
     :param src: 资源路径
     :param tar_dir: 目标路径
     """
-    assert os.path.exists(src_path)  # 判断文件存在
-    exists_or_create(os.path.dirname(dst_path))
+    assert os.path.exists(src)  # 判断文件存在
+    if os.path.isfile(src):
+        exists_or_create(os.path.dirname(dst_dir))
+        try:
+            shutil.copyfile(src, dst_dir)
+        except IOError as e:
+            print("Unable to copy file. %s" % e)
+    else:
+        print("开始复制，开始时间：%s" % tu.cur_time())
+        start_time = time.time()
+        sum = cal_files(tar_dir = src)
 
-    try:
-        shutil.copyfile(src_path, dst_path)
-    except IOError as e:
-        print("Unable to copy file. %s" % e)
-
-
-def cpdir(src: str, dst_dir):
-    """
-    复制整个文件夹下的路径
-    :param scr_dir: 如/content/src/ /content/src
-    :param dst_path:
-    :return:
-    """
-    print("开始复制，开始时间：%s" % tu.cur_time())
-    start_time = time.time()
-    sum = cal_files(tar_dir = src)
-
-    src = src.rstrip("/")  # 移除目录末尾的/
-    src_dir = os.path.dirname(src)
-    index = 0
-    for root, dirs, files in os.walk(src, topdown = True, followlinks = True):
-        pure_path = root.replace(src_dir, "").lstrip("/")
-        files_dir = os.path.join(dst_dir, pure_path)
-        for file in files:
-            cp(os.path.join(root, file), os.path.join(files_dir, file))
-            index += 1
-            # 如果总数大于200个，显示复制进度
-            if sum > 200:
-                print_process("复制进度", index, sum, tu.diff(time.time() - start_time))
-    print("复制完成，结束时间：%s，耗时：%s" % (tu.cur_time(), tu.diff(time.time() - start_time)))
+        src = src.rstrip("/")  # 移除目录末尾的/
+        src_dir = os.path.dirname(src)
+        index = 0
+        for root, dirs, files in os.walk(src, topdown = True, followlinks = True):
+            pure_path = root.replace(src_dir, "").lstrip("/")
+            files_dir = os.path.join(dst_dir, pure_path)
+            for file in files:
+                cp(os.path.join(root, file), os.path.join(files_dir, file))
+                index += 1
+                # 如果总数大于200个，显示复制进度
+                if sum > 200:
+                    print_process("复制进度", index, sum, tu.diff(time.time() - start_time))
+        print("复制完成，结束时间：%s，耗时：%s" % (tu.cur_time(), tu.diff(time.time() - start_time)))
 
 
 def mv(src, tar_dir):
