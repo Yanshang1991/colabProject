@@ -153,10 +153,10 @@ if __name__ == '__main__':
     parser.add_argument('--val_dir', default = r'/content/dataset', help = 'path of val data')
 
     # parser.add_argument('--wrdtxtfile', default = r'dataset/transcript/aishell_transcript_v0.8.txt', help = 'path of val data')
-    parser.add_argument('--wrdtxtfile', default = r'/content/drive/MyDrive/Dataset/dataset_crnn/hanzi.txt', help = 'path of val data')
-    parser.add_argument('--phntxtfile', default = r'/content/drive/MyDrive/Dataset/dataset_crnn/pinyin.txt', help = 'path of val data')
-    parser.add_argument('--phoneme_file', default = r'/content/project/crnn_model/dataset/phoneme_label.txt', help = 'path of val data')
-    parser.add_argument('--word_file', default = r'/content/project/crnn_model/dataset/wrds_label.txt', help = 'path of val data')
+    parser.add_argument('--wrdtxtfile', default = r'./dataset/hanzi.txt', help = 'path of val data')
+    parser.add_argument('--phntxtfile', default = r'./dataset/pinyin.txt', help = 'path of val data')
+    parser.add_argument('--phoneme_file', default = r'./dataset/phoneme_label.txt', help = 'path of val data')
+    parser.add_argument('--word_file', default = r'./dataset/wrds_label.txt', help = 'path of val data')
 
     parser.add_argument('--cuda', action = 'store_true', help = 'enables cuda')
     parser.add_argument('--ngpu', type = int, default = 1, help = 'number of GPUs to use')
@@ -165,9 +165,9 @@ if __name__ == '__main__':
     # parser.add_argument('--pretrained', default = r't0520.pth', help = "path to pretrained model (to continue training)")
     parser.add_argument('--pretrained', default = r'', help = "path to pretrained model (to continue training)")
 
-    parser.add_argument('--pic_path', default = r'/content/project/crnn_model/train_pic/', help = "path to load pics")
+    parser.add_argument('--pic_path', default = r'./train_pic/', help = "path to load pics")
     # parser.add_argument('--alphabet', type=str, default='0123456789abcdefghijklmnopqrstuvwxyz')
-    parser.add_argument('--expr_dir', default = r'/content/project/crnn_model/expr/', help = 'Where to store samples and models')
+    parser.add_argument('--expr_dir', default = r'./expr/', help = 'Where to store samples and models')
     parser.add_argument('--displayInterval', type = int, default = 10, help = 'Interval to be displayed')
     parser.add_argument('--n_test_disp', type = int, default = 10, help = 'Number of samples to display when test')
     parser.add_argument('--valInterval', type = int, default = 300, help = 'Interval to be displayed')
