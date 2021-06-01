@@ -28,6 +28,7 @@ def cal_files(tar_dir, file_exts = None):
                 count += 1
                 print('\r' + '[文件数量] %d' % count, end = ' ')
 
+    print("")
     return count
 
 
@@ -41,17 +42,18 @@ def exists_or_create(dir):
         os.makedirs(dir)
 
 
-def cp(src, dst_dir):
+def cp(src, dst_dir, under_dir = False):
     """
     复制文件
     :param src: 资源路径
     :param tar_dir: 目标路径
+    :param under_dir: 是否版本源目录；True，包含；False，只复制目录下的文件
     """
     assert os.path.exists(src)  # 判断文件存在
     if os.path.isfile(src):
         exists_or_create(os.path.dirname(dst_dir))
         try:
-            shutil.copyfile(src, dst_dir)
+            shutil.copyfile(src, os.path.join(dst_dir, os.path.basename(src)))
         except IOError as e:
             print("Unable to copy file. %s" % e)
     else:
@@ -60,19 +62,22 @@ def cp(src, dst_dir):
         sum = cal_files(tar_dir = src)
 
         src = src.rstrip("/")  # 移除目录末尾的/
-        src_dir = os.path.dirname(src)
+        if under_dir:
+            src_dir = src
+        else:
+            src_dir = os.path.dirname(src)
         index = 0
         for root, dirs, files in os.walk(src, topdown = True, followlinks = True):
             pure_path = root.replace(src_dir, "").lstrip("/")
             files_dir = os.path.join(dst_dir, pure_path)
+            exists_or_create(files_dir)
             for file in files:
-                cp(os.path.join(root, file), os.path.join(files_dir, file))
+                cp(os.path.join(root, file), files_dir)
                 index += 1
                 # 如果总数大于200个，显示复制进度
                 if sum > 200:
                     print_process("复制进度", index, sum, time.time() - start_time)
         print("复制完成，结束时间：%s，耗时：%s" % (tu.cur_time(), tu.diff(time.time() - start_time)))
-
 
 def mv(src, tar_dir):
     shutil.move(src, tar_dir)
