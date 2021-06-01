@@ -5,6 +5,7 @@ import shutil
 import time_utils as tu
 import time
 import zipfile
+import tarfile
 
 
 def print_process(name, cur_size, max_size, time_cost):
@@ -166,7 +167,34 @@ def unzip(zip_file_path, dst = None):
             exists_or_create(dst)
         z.extractall(path = dst)
 
-unzip("./aaa/aaa.zip")
+
+def unzip(zip_file_path, dst = None):
+    exists(zip_file_path)
+    with zipfile.ZipFile(zip_file_path, 'r') as z:
+        if dst is None:
+            dst = os.path.dirname(zip_file_path)
+        else:
+            exists_or_create(dst)
+        z.extractall(path = dst)
+
+
+def tar(src, dst_dir):
+    dst_path = os.path.join(dst_dir, os.path.split(src.rstrip("/"))[-1] + ".gz")
+    with tarfile.open(dst_path, "w:gz") as tar:
+        # 创建压缩包
+        for root, dir, files in os.walk(src, topdown = False):
+            for file in files:
+                fullpath = os.path.join(root, file)
+                tar.add(fullpath)
+
+
+
+def untar(tar_path, target_path):
+    with tarfile.open(tar_path, "r:gz") as tar:
+        file_names = tar.getnames()
+        for file_name in file_names:
+            tar.extract(file_name, target_path)
+
 
 def get_size(src):
     """
