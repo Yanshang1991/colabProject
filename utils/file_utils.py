@@ -168,25 +168,14 @@ def unzip(zip_file_path, dst = None):
         z.extractall(path = dst)
 
 
-def unzip(zip_file_path, dst = None):
-    exists(zip_file_path)
-    with zipfile.ZipFile(zip_file_path, 'r') as z:
-        if dst is None:
-            dst = os.path.dirname(zip_file_path)
-        else:
-            exists_or_create(dst)
-        z.extractall(path = dst)
-
-
 def tar(src, dst_dir):
     dst_path = os.path.join(dst_dir, os.path.split(src.rstrip("/"))[-1] + ".gz")
-    with tarfile.open(dst_path, "w:gz") as tar:
+    with tarfile.open(dst_path, "w:gz") as t:
         # 创建压缩包
         for root, dir, files in os.walk(src, topdown = False):
             for file in files:
                 fullpath = os.path.join(root, file)
-                tar.add(fullpath)
-
+                t.add(fullpath)
 
 
 def untar(tar_path, target_path):
