@@ -51,7 +51,7 @@ def cp(src, dst_dir, under_dir = False):
     """
     复制文件
     :param src: 资源路径
-    :param tar_dir: 目标路径
+    :param dst_dir: 目标路径
     :param under_dir: 是否版本源目录；True，包含；False，只复制目录下的文件
     """
     exists(src)  # 判断文件存在
@@ -211,3 +211,5 @@ def get_size(src):
     size = round(size, 2)
     print("scr: %s, size: %dMB, count: %d" % (src, size, count))
     return size
+
+

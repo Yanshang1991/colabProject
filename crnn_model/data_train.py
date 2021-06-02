@@ -33,7 +33,6 @@ def weights_init(m):
 
 
 def train(crnn, train_loader, criterion, epoch):
-    # crnn=crnn.to(device)
     for p in crnn.parameters():
         p.requires_grad = True
 
@@ -42,7 +41,7 @@ def train(crnn, train_loader, criterion, epoch):
 
     for i_batch, (image, index, phonemeText) in enumerate(train_loader):
 
-        if False:
+        if True:
             for index, img in enumerate(image):
                 # imgName = '/home/tk_nd/workfile/crnn_model/tmp/' + str(index) + '.png'
                 # print(imgName)
@@ -128,31 +127,20 @@ if __name__ == '__main__':
 
     # ---------------     predefined parameters   ---------------
     parser = argparse.ArgumentParser()
-    # parser.add_argument('--trainRoot', required=True, help='path to dataset')
-    # parser.add_argument('--valRoot', required=True, help='path to dataset')
     parser.add_argument('--workers', type = int, help = 'number of data loading workers', default = 4)
     parser.add_argument('--batchSize', type = int, default = 32, help = 'input batch size')
     parser.add_argument('--imgH', type = int, default = 160, help = 'the height of the input image to network')
     parser.add_argument('--imgW', type = int, default = 1200, help = 'the width of the input image to network')
 
-    # parser.add_argument('--imgH', type=int, default=288, help='the height of the input image to network')
-    # parser.add_argument('--imgW', type=int, default=1200, help='the width of the input image to network')
-
-    # parser.add_argument('--hop_length', type=int, default=100, help='the width of time window')
-    # parser.add_argument('--win_length', type=int, default=400, help='the width of hamming window')
     parser.add_argument('--window_ms', type = int, default = 20, help = 'the duration of hann window millisecond')
     parser.add_argument('--stride_ms', type = int, default = 10, help = 'the duration of a stride millisecond')
     parser.add_argument('--sr', type = int, default = 16000, help = 'default sample rate')
 
-    # parser.add_argument('--n_fft', type=int, default=512, help='the default length of sfft')
-    # parser.add_argument('--sr', type=int, default=22050, help='the default sample rate')
-
-    parser.add_argument('--nh', type = int, default = 256, help = 'size of the lstm hidden state')
+    parser.add_argument('--nh', type = int, default = 512, help = 'size of the lstm hidden state')
     parser.add_argument('--nepoch', type = int, default = 100, help = 'number of epochs to train for')
     parser.add_argument('--train_dir', default = r'/content/dataset', help = 'path of train data')
     parser.add_argument('--val_dir', default = r'/content/dataset', help = 'path of val data')
 
-    # parser.add_argument('--wrdtxtfile', default = r'dataset/transcript/aishell_transcript_v0.8.txt', help = 'path of val data')
     parser.add_argument('--wrdtxtfile', default = r'/content/colabProject/crnn_model/dataset/hanzi.txt', help = 'path of val data')
     parser.add_argument('--phntxtfile', default = r'/content/colabProject/crnn_model/dataset/pinyin.txt', help = 'path of val data')
     parser.add_argument('--phoneme_file', default = r'/content/colabProject/crnn_model/dataset/phoneme_label.txt', help = 'path of val data')
@@ -161,12 +149,9 @@ if __name__ == '__main__':
     parser.add_argument('--cuda', action = 'store_true', help = 'enables cuda')
     parser.add_argument('--ngpu', type = int, default = 1, help = 'number of GPUs to use')
 
-    # parser.add_argument('--pretrained', default = r'/content/drive/MyDrive/Dataset/crnn/pretrained/t0519.pth', help = "path to pretrained model (to continue training)")
-    # parser.add_argument('--pretrained', default = r't0520.pth', help = "path to pretrained model (to continue training)")
     parser.add_argument('--pretrained', default = r'', help = "path to pretrained model (to continue training)")
 
     parser.add_argument('--pic_path', default = r'/content/colabProject/crnn_model/train_pic/', help = "path to load pics")
-    # parser.add_argument('--alphabet', type=str, default='0123456789abcdefghijklmnopqrstuvwxyz')
     parser.add_argument('--expr_dir', default = r'/content/colabProject/crnn_model/expr/', help = 'Where to store samples and models')
     parser.add_argument('--displayInterval', type = int, default = 10, help = 'Interval to be displayed')
     parser.add_argument('--n_test_disp', type = int, default = 10, help = 'Number of samples to display when test')
@@ -253,11 +238,6 @@ if __name__ == '__main__':
         print('loading pretrained model from %s' % params.pretrained)
         crnn.load_state_dict(torch.load(params.pretrained, map_location = torch.device(device)))  # crnn.load_state_dict(torch.load('crnn_best.pth',map_location=torch.device('cpu')))
 
-    # checkpoint = torch.load(dir)
-    # model.load_state_dict(checkpoint['net'])
-    # optimizer.load_state_dict(checkpoint['optimizer'])
-    # start_epoch = checkpoint['epoch'] + 1
-
     if params.adam:
         optimizer = optim.Adam(crnn.parameters(), lr = params.lr, betas = (params.beta1, 0.999))
     elif params.adadelta:
@@ -268,7 +248,5 @@ if __name__ == '__main__':
     for i_epoch in range(params.nepoch):
         print('========== epoch = %d ==========' % (i_epoch))
         train(crnn, train_loader, criterion, params.nepoch)
-        # val(crnn, val_loader, criterion)
         torch.save(crnn.state_dict(), r'/content/drive/MyDrive/t0525.pth')
 
-# accuracy = val(crnn, val_loader, criterion, epoch, max_i=1000)
