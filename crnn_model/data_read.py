@@ -119,12 +119,20 @@ class GetDataset(Dataset):
         print("文件读取失败的数量：%d" % count_file_not_existed)
 
     def _get_label_info(self, label_path):
-        with open(label_path, 'r', encoding = 'utf-8') as fr:
-            for c in fr.readlines():
-                item = c.split(' ')
-                fileName = item[0]
-                newlabel = c.replace(fileName, "").replace("\n", "")
-                self.label_map[fileName] = newlabel
-        print("标签数量：%d" % len(self.label_map))
+        assert os.path.exists(label_path)
+        if os.path.isfile(label_path):
+            with open(label_path, 'r', encoding = 'utf-8') as fr:
+                for c in fr.readlines():
+                    item = c.split(' ')
+                    fileName = item[0]
+                    newlabel = c.replace(fileName, "").replace("\n", "")
+                    self.label_map[fileName] = newlabel
+            print("标签数量：%d" % len(self.label_map))
+        else:
+            for root, dirs, files in os.walk(label_path, topdown = False, followlinks = True):
+                for file in files:
+                    if file.endswith("pinyin.txt"):
+                        self._get_label_info(os.path.join(root, file))
+
 
 

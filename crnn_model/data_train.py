@@ -141,8 +141,8 @@ if __name__ == '__main__':
     parser.add_argument('--train_dir', default = r'/content/dataset', help = 'path of train data')
     parser.add_argument('--val_dir', default = r'/content/dataset', help = 'path of val data')
 
-    parser.add_argument('--wrdtxtfile', default = r'/content/colabProject/crnn_model/dataset/hanzi.txt', help = 'path of val data')
-    parser.add_argument('--phntxtfile', default = r'/content/colabProject/crnn_model/dataset/pinyin.txt', help = 'path of val data')
+    parser.add_argument('--wrdtxtfile', default = r'/content/label', help = 'path of val data')
+    parser.add_argument('--phntxtfile', default = r'/content/label', help = 'path of val data')
     parser.add_argument('--phoneme_file', default = r'/content/colabProject/crnn_model/dataset/phoneme_label.txt', help = 'path of val data')
     parser.add_argument('--word_file', default = r'/content/colabProject/crnn_model/dataset/wrds_label.txt', help = 'path of val data')
 
