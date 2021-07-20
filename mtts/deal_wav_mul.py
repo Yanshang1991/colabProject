@@ -62,7 +62,6 @@ class DealThread(threading.Thread):
         self.result_list = result_list
         self.wav_out_dir = wav_out_dir
 
-
     def run(self):
         print("开启线程：" + self.name)
         num_error = 0
@@ -84,9 +83,11 @@ class DealThread(threading.Thread):
             seg_audio.export(self.wav_out_dir + file_name, format("wav"))
             duration_list = words_to_duration(info["words"])
             duration_info = " ".join(duration_list) + "|0.0|" + str('%.2f' % (float(duration) / 1000))
-            self.result_list.append(f"{file_name}|sil {get_pin_yin(text)} sil|sil {text} sil|{duration_info}")
+            self.result_list.append(f"text{self.name}-{index}|sil {get_pin_yin(text)} sil|sil {text} sil|{duration_info}")
             index += 1
         print("退出线程：" + self.name)
+        with open(dst_path, "w", encoding = "utf-8") as txt_f:
+            txt_f.write("\n".join(result))
 
 
 if __name__ == '__main__':
@@ -121,6 +122,4 @@ if __name__ == '__main__':
             thread.start()
             threads.append(thread)
     for thread in threads:
-        thread.join()
-    # with open(dst_path, "w", encoding = "utf-8") as txt_f:
-    #     txt_f.write("\n".join(result))
+        thread.join()  # with open(dst_path, "w", encoding = "utf-8") as txt_f:  #     txt_f.write("\n".join(result))
