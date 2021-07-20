@@ -39,18 +39,18 @@ class GetDataset(Dataset):
         return image, index, transcript
 
     def _wav_to_sfft(self, sfft_path):
-        sr, y = wav.read(sfft_path)
-        stride_ms = self.params.stride_ms
-        window_ms = self.params.window_ms
+        sr, y = wav.read(sfft_path)  # sr，采样率；y，数据
+        stride_ms = self.params.stride_ms  # train文件中配置的参数，步幅，10ms
+        window_ms = self.params.window_ms  # train文件中配置的参数
         max_freq = sr / 2
         eps = 1e-14
 
-        stride_size = int(0.001 * sr * stride_ms)
-        window_size = int(0.001 * sr * window_ms)
+        stride_size = int(0.001 * sr * stride_ms)  # 160
+        window_size = int(0.001 * sr * window_ms)  # 320
 
         truncate_size = (len(y) - window_size) % stride_size
-        samples = y[:len(y) - truncate_size]
-        nshape = (window_size, (len(samples) - window_size) // stride_size + 1)
+        samples = y[:len(y) - truncate_size]  # 去掉不够一个步幅的内容，(samples - window_size) 是步幅的整数倍
+        nshape = (window_size, (len(samples) - window_size) // stride_size + 1)  # (window_size, samples去除window_size 之后包含stride_size的个数+1)
         nstrides = (samples.strides[0], samples.strides[0] * stride_size)
         windows = np.lib.stride_tricks.as_strided(samples, shape = nshape, strides = nstrides)
         assert np.all(windows[:, 1] == samples[stride_size:(stride_size + window_size)])
