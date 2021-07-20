@@ -55,11 +55,12 @@ def words_to_duration(words):
 
 
 class DealThread(threading.Thread):
-    def __init__(self, path, json_name, result_list):
+    def __init__(self, path, json_name, result_list, wav_out_dir):
         threading.Thread.__init__(self)
         self.name = json_name
         self.path = path
         self.result_list = result_list
+        self.wav_out_dir = wav_out_dir
 
 
     def run(self):
@@ -80,7 +81,7 @@ class DealThread(threading.Thread):
             wav_audio = AudioSegment.from_mp3(wav_path).set_channels(1)  # 读取为拆分的音频
             seg_audio = silent + wav_audio[info["start_time"]:info["end_time"]] + silent
             file_name = f"/text{self.name}-{index}.wav"
-            seg_audio.export(wav_out_dir + file_name, format("wav"))
+            seg_audio.export(self.wav_out_dir + file_name, format("wav"))
             duration_list = words_to_duration(info["words"])
             duration_info = " ".join(duration_list) + "|0.0|" + str('%.2f' % (float(duration) / 1000))
             self.result_list.append(f"{file_name}|sil {get_pin_yin(text)} sil|sil {text} sil|{duration_info}")
@@ -116,7 +117,7 @@ if __name__ == '__main__':
             (name, ext) = os.path.splitext(file)
             if not ext == ".json":
                 continue
-            thread = DealThread(path = os.path.join(root, file), json_name = name)
+            thread = DealThread(path = os.path.join(root, file), json_name = name, result_list = result, wav_out_dir = wav_out_dir)
             thread.start()
             threads.append(thread)
     for thread in threads:
