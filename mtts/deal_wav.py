@@ -68,6 +68,8 @@ if __name__ == '__main__':
     wav_dir = args.wav_dir
     dst_path = args.dst_path
     wav_out_dir = args.wav_out_dir
+    if os.path.exists(wav_out_dir):
+        os.makedirs(wav_out_dir, exist_ok = True)
 
     result = []
     index = 0  # 文件的名称
