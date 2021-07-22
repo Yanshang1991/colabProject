@@ -26,10 +26,10 @@ if __name__ == '__main__':
     wav_files = glob.glob(os.path.join(src_dir, '*'), recursive = True)
     for file in wav_files:
         try:
-            # name, ext = os.path.splitext(file)
-            # file_path = os.path.join(root, file)
-            # new_file_path = root + "/" + name + ".pcm"
-            # os.renames(file, new_file_path)
+            (name, _) = os.path.splitext(file)
+            new_file = name + ".pcm"
+            os.renames(file, new_file)
+            file = new_file
             audio += AudioSegment.from_file(file, sample_width = 2, frame_rate = 44100, channels = 2)
             if audio.duration_seconds > duration:  # 超过指定时长，保存
                 print(f"保存第{index}个音频文件")
