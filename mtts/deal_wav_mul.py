@@ -77,13 +77,14 @@ class DealThread(threading.Thread):
                 continue
             duration = info["end_time"] - info["start_time"]  # 持续时间
             wav_path = os.path.join(wav_dir, name + ".wav")  # 音频文件路径
-            wav_audio = AudioSegment.from_mp3(wav_path).set_channels(1)  # 读取为拆分的音频
-            seg_audio = silent + wav_audio[info["start_time"]:info["end_time"]] + silent
-            file_name = f"/text{self.name}-{index}.wav"
-            seg_audio.export(self.wav_out_dir + file_name, format("wav"))
+            # wav_audio = AudioSegment.from_mp3(wav_path).set_channels(1)  # 读取为拆分的音频
+            # seg_audio = silent + wav_audio[info["start_time"]:info["end_time"]] + silent
+            # file_name = f"/text{self.name}-{index}.wav"
+            # seg_audio.export(self.wav_out_dir + file_name, format("wav"))
             duration_list = words_to_duration(info["words"])
             duration_info = " ".join(duration_list) + "|0.0|" + str('%.2f' % (float(duration) / 1000))
-            self.result_list.append(f"text{self.name}-{index}|sil {get_pin_yin(text)} sil|sil {text} sil|{duration_info}")
+            new_text = " ".join(text)
+            self.result_list.append(f"text{self.name}-{index}|sil {get_pin_yin(text)} sil|sil {new_text} sil|{duration_info}")
             index += 1
         print("退出线程：" + self.name)
         with open(dst_path, "w", encoding = "utf-8") as txt_f:
