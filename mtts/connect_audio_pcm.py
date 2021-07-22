@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import argparse
 import os
+import glob
 
 from pydub import AudioSegment
 
@@ -21,21 +22,22 @@ if __name__ == '__main__':
         os.makedirs(dst_dir, exist_ok = True)
     audio = AudioSegment.silent(silent)
     index = 0
-    for root, dirs, files in os.walk(src_dir, topdown = False, followlinks = True):
-        for file in files:
-            try:
-                name, ext = os.path.splitext(file)
-                file_path = os.path.join(root, file)
-                # new_file_path = root + "/" + name + ".pcm"
-                # os.renames(file, new_file_path)
-                audio += AudioSegment.from_file(file_path, sample_width = 2, frame_rate = 44100, channels = 2)
-                if audio.duration_seconds > duration:  # 超过指定时长，保存
-                    print(f"保存第{index}个音频文件")
-                    audio.export(os.path.join(dst_dir, f"{index}.mp3"), format = "raw")
-                    index += 1
-                    audio = AudioSegment.silent(silent)
-            except:
-                print(f"异常")
-                continue
+    glob.glob(src_dir)
+    wav_files = glob.glob(os.path.join(src_dir, '*'), recursive = True)
+    for file in wav_files:
+        try:
+            # name, ext = os.path.splitext(file)
+            # file_path = os.path.join(root, file)
+            # new_file_path = root + "/" + name + ".pcm"
+            # os.renames(file, new_file_path)
+            audio += AudioSegment.from_file(file, sample_width = 2, frame_rate = 44100, channels = 2)
+            if audio.duration_seconds > duration:  # 超过指定时长，保存
+                print(f"保存第{index}个音频文件")
+                audio.export(os.path.join(dst_dir, f"{index}.mp3"), format = "raw")
+                index += 1
+                audio = AudioSegment.silent(silent)
+        except:
+            print(f"异常")
+            continue
     if audio.duration_seconds > 3:
         audio.export(os.path.join(dst_dir, f"{index}.mp3"), format = "raw")
