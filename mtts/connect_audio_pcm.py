@@ -30,10 +30,12 @@ if __name__ == '__main__':
                 # os.renames(file, new_file_path)
                 audio += AudioSegment.from_file(file_path, sample_width = 2, frame_rate = 44100, channels = 2)
                 if audio.duration_seconds > duration:  # 超过指定时长，保存
+                    print(f"保存第{index}个音频文件")
                     audio.export(os.path.join(dst_dir, f"{index}.mp3"), format = "raw")
                     index += 1
                     audio = AudioSegment.silent(silent)
             except:
+                print(f"异常")
                 continue
     if audio.duration_seconds > 3:
         audio.export(os.path.join(dst_dir, f"{index}.mp3"), format = "raw")
