@@ -5,6 +5,8 @@ import os
 from audio_subtitle.audio_subtitle import AudioSubtitleParser
 import json
 
+import split
+
 
 def create_parser():
     with open(r'./config.json', 'r', encoding = 'utf-8') as f:
@@ -13,8 +15,9 @@ def create_parser():
 
 
 def write_json_response(json_response, path):
+    json_str = json.dumps(json_response)
     with open(path, 'w', encoding = "utf-8") as f:
-        f.write(json.dumps(json_response))
+        f.write(json_str)
 
 
 if __name__ == '__main__':
@@ -36,7 +39,8 @@ if __name__ == '__main__':
         (name, _) = os.path.splitext(file)
         write_json_response(json_response, name + ".json")
         print(f"{file}, 识别成功")
-
+        name = name.split("/")[-1]
+        split.split_(file, json_response, os.path.join(src_dir, name), os.path.join(src_dir, name + ".txt"), name)
         # 根据结果切分文件
 
 

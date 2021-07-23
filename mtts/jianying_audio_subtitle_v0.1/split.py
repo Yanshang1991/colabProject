@@ -57,7 +57,7 @@ def words_to_duration(words):
     return duration
 
 
-def deal(wav_path, json_info, wav_out_dir, result_list, dst_path, index = 0):
+def deal(wav_path, json_info, wav_out_dir, result_list, dst_path, wav_name = "", index = 0):
     num_error = 0
     info_list = json_info["data"]["utterances"]
     last_info = None
@@ -84,7 +84,7 @@ def deal(wav_path, json_info, wav_out_dir, result_list, dst_path, index = 0):
             last_info = info
             continue
         seg_audio = silent + wav_audio[start_time:end_time] + silent
-        file_name = f"{index}_{text}"
+        file_name = f"{wav_name}_{index}_{text}"
         seg_audio.export(os.path.join(wav_out_dir, file_name + ".wav"), format("wav"))
         words = info["words"]
         if last_info is not None:
@@ -101,21 +101,22 @@ def deal(wav_path, json_info, wav_out_dir, result_list, dst_path, index = 0):
 
 
 class DealThread(threading.Thread):
-    def __init__(self, wav_path, json_info, result_list, wav_out_dir, dst_path):
+    def __init__(self, wav_path, json_info, result_list, wav_out_dir, dst_path, wav_name):
         threading.Thread.__init__(self)
         self.wav_path = wav_path
         self.json_info = json_info
         self.result_list = result_list
         self.wav_out_dir = wav_out_dir
         self.dst_path = dst_path
+        self.wav_name = wav_name
 
     def run(self):
         deal(self.wav_path, self.json_info, self.wav_out_dir, self.result_list, self.dst_path)
 
 
-def split_(wav_path, json_info, wav_out_dir, dst_path):
+def split_(wav_path, json_info, wav_out_dir, dst_path, wav_name):
     result_list = []
-    deal_thread = DealThread(wav_path, json_info, result_list = result_list, wav_out_dir = wav_out_dir, dst_path = dst_path)
+    deal_thread = DealThread(wav_path, json_info, result_list = result_list, wav_out_dir = wav_out_dir, dst_path = dst_path, wav_name = wav_name)
     deal_thread.start()
 
 
