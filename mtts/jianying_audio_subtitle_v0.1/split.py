@@ -47,12 +47,12 @@ def get_one_duration(start, end, sample_rate = 22050, hop_length = 256):
 
 
 def words_to_duration(words):
-    duration = [get_one_duration(0, 0.3)]
+    duration = [get_one_duration(0, 0.15)]
     for word in words:
         start = float(word["start_time"]) / 1000
         end = float(word["end_time"]) / 1000
         duration.append(get_one_duration(start, end))
-    duration.append(get_one_duration(0, 0.3))
+    duration.append(get_one_duration(0, 0.15))
     return duration
 
 
@@ -94,7 +94,7 @@ class DealThread(threading.Thread):
                 last_info = info
                 continue
             seg_audio = silent + wav_audio[start_time:end_time] + silent
-            file_name = f"/{index}_{text}"
+            file_name = f"{index}_{text}"
             seg_audio.export(os.path.join(self.wav_out_dir, file_name + ".wav"), format("wav"))
             words = info["words"]
             if last_info is not None:
@@ -112,7 +112,7 @@ class DealThread(threading.Thread):
 
 def split(wav_path, json_info, wav_out_dir, dst_path):
     result_list = []
-    deal_Thread = DealThread(wav_path, json_info, result_list = result_list, wav_out_dir = wav_out_dir, dst_path= dst_path)
+    deal_Thread = DealThread(wav_path, json_info, result_list = result_list, wav_out_dir = wav_out_dir, dst_path = dst_path)
     deal_Thread.start()
 
 
