@@ -37,3 +37,6 @@ if __name__ == '__main__':
         write_json_response(json_response, name + ".json")
         print(f"{file}, 识别成功")
 
+        # 根据结果切分文件
+
+

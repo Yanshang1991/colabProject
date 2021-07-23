@@ -73,6 +73,10 @@ def audio_subtitle_query(id, device_time, tdid, sign):
     rsp = requests.post(HOST + '/lv/v1/audio_subtitle/query', headers=headers, data=data)
     
     if rsp.status_code == 200:
-        return json.loads(rsp.text)
+        json_response = json.loads(rsp.text)
+        if not json_response["errmsg"] == "success":
+            audio_subtitle_query(id, device_time, tdid, sign)
+        else:
+            return json_response
     else:
         raise RuntimeError(rsp.text)
