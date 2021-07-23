@@ -55,10 +55,10 @@ def words_to_duration(words):
 
 
 class DealThread(threading.Thread):
-    def __init__(self, path, json_name, result_list, wav_out_dir):
+    def __init__(self, wav_path, json_path, result_list, wav_out_dir):
         threading.Thread.__init__(self)
-        self.name = json_name
-        self.path = path
+        self.wav_path = wav_path
+        self.json_path = json_path
         self.result_list = result_list
         self.wav_out_dir = wav_out_dir
 
@@ -66,7 +66,7 @@ class DealThread(threading.Thread):
         print("开启线程：" + self.name)
         num_error = 0
         index = 0
-        with open(self.path, 'r', encoding = 'utf-8') as json_f:  # json文件
+        with open(self.json_path, 'r', encoding = 'utf-8') as json_f:  # json文件
             draft = json.load(json_f)
         info_list = draft["data"]["utterances"]
         for info in info_list:
@@ -76,11 +76,10 @@ class DealThread(threading.Thread):
                 print(f"内容：{text}，含有非中文字符。json文件：{self.name}，总数量：{num_error}")
                 continue
             duration = info["end_time"] - info["start_time"]  # 持续时间
-            wav_path = os.path.join(wav_dir, name + ".wav")  # 音频文件路径
-            # wav_audio = AudioSegment.from_mp3(wav_path).set_channels(1)  # 读取为拆分的音频
-            # seg_audio = silent + wav_audio[info["start_time"]:info["end_time"]] + silent
-            # file_name = f"/text{self.name}-{index}.wav"
-            # seg_audio.export(self.wav_out_dir + file_name, format("wav"))
+            wav_audio = AudioSegment.from_mp3(self.wav_path).set_channels(1)  # 读取为拆分的音频
+            seg_audio = silent + wav_audio[info["start_time"]:info["end_time"]] + silent
+            file_name = f"/text{self.name}-{index}.wav"
+            seg_audio.export(self.wav_out_dir + file_name, format("wav"))
             duration_list = words_to_duration(info["words"])
             duration_info = " ".join(duration_list) + "|0.0|" + str('%.2f' % (float(duration) / 1000))
             new_text = " ".join(text)
@@ -89,6 +88,11 @@ class DealThread(threading.Thread):
         print("退出线程：" + self.name)
         with open(dst_path, "w", encoding = "utf-8") as txt_f:
             txt_f.write("\n".join(result))
+
+
+def split(wav_path, json_info):
+    result_list = []
+    DealThread(path = os.path.join(root, file), json_name = name, result_list = result, wav_out_dir = wav_out_dir)
 
 
 if __name__ == '__main__':

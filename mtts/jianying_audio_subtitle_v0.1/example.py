@@ -13,7 +13,7 @@ def create_parser():
 
 
 def write_json_response(json_response, path):
-    with open(path, 'w') as f:
+    with open(path, 'w', encoding = "utf-8") as f:
         f.write(json.dumps(json_response))
 
 
