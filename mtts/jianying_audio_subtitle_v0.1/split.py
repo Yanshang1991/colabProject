@@ -136,6 +136,7 @@ if __name__ == '__main__':
     index = 0
     for root, dirs, files in os.walk(json_dir, topdown = False, followlinks = True):
         for file in files:
+            print(f"文件{file}")
             (name, ext) = os.path.splitext(file)
             if ext is not ".json":
                 continue
