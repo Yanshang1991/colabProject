@@ -132,8 +132,6 @@ if __name__ == '__main__':
     dst_path = args.dst_path
     out_wav_dir = args.out_wav_dir
     input_wav_type = args.input_wav_type
-    wav_files = glob.glob(os.path.join(input_wav_dir, "*" + input_wav_type))
-    json_files = glob.glob(os.path.join(json_dir, "*.json"))
     result_list = []
     index = 0
     for root, dirs, files in os.walk(json_dir, topdown = False, followlinks = True):
