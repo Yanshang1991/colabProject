@@ -113,7 +113,6 @@ class TextNormal:
                 py = self._convert_er2(py, gp)
                 new_py_sent_list += [py]
             py_sent_list = new_py_sent_list
-            print(new_py_sent_list)
 
         return py_sent_list, gp_sent_list
 
