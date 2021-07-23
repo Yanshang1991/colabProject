@@ -113,7 +113,7 @@ class DealThread(threading.Thread):
         deal(self.wav_path, self.json_info, self.wav_out_dir, self.result_list, self.dst_path)
 
 
-def split(wav_path, json_info, wav_out_dir, dst_path):
+def split_(wav_path, json_info, wav_out_dir, dst_path):
     result_list = []
     deal_thread = DealThread(wav_path, json_info, result_list = result_list, wav_out_dir = wav_out_dir, dst_path = dst_path)
     deal_thread.start()
@@ -136,10 +136,10 @@ if __name__ == '__main__':
     index = 0
     for root, dirs, files in os.walk(json_dir, topdown = False, followlinks = True):
         for file in files:
-            print(f"文件{file}")
             (name, ext) = os.path.splitext(file)
             if not ext == ".json":
                 continue
+            print(f"开始处理，文件{file}")
             wav_path = os.path.join(input_wav_dir, name + input_wav_type)
             if not os.path.exists(wav_path):
                 print(f"音频文件：{wav_path}，不存在")
@@ -152,6 +152,7 @@ if __name__ == '__main__':
 
             try:
                 index = deal(wav_path, json_info, out_wav_dir, result_list, dst_path, index)
+                print(f"处理完成，总数：{index}")
             except:
                 print(f"音频转换异常：{file}，读取失败")
     with open(dst_path, "w", encoding = "utf-8") as txt_f:
