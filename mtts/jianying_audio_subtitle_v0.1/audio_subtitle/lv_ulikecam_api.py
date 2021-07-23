@@ -53,14 +53,18 @@ def audio_subtitle_query(id, device_time, tdid, sign):
 
     rsp = requests.post(HOST + '/lv/v1/audio_subtitle/query', headers = headers, data = data)
 
+    print(f"剪映，query接口响应\n{rsp.text}")
+
     if rsp.status_code == 200:
         json_response = json.loads(rsp.text)
         if not json_response["errmsg"] == "success":
+            print("剪映，query接口获取内容为空，重新发起请求")
             time.sleep(1)
             audio_subtitle_query(id, device_time, tdid, sign)
         else:
             return json_response
     elif rsp.status_code == 504:
+        print("剪映，query接口504，重新发起请求")
         time.sleep(1)
         audio_subtitle_query(id, device_time, tdid, sign)
     else:
