@@ -138,7 +138,7 @@ if __name__ == '__main__':
         for file in files:
             print(f"文件{file}")
             (name, ext) = os.path.splitext(file)
-            if ext is not ".json":
+            if not ext == ".json":
                 continue
             wav_path = os.path.join(input_wav_dir, name + input_wav_type)
             if not os.path.exists(wav_path):
