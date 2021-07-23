@@ -15,9 +15,9 @@ def create_parser():
 
 
 def write_json_response(json_response, path):
-    json_str = json.dumps(json_response)
     with open(path, 'w', encoding = "utf-8") as f:
-        f.write(json_str)
+        json.dump(json_response, f)
+
 
 
 if __name__ == '__main__':
