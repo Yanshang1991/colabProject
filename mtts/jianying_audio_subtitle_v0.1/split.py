@@ -127,10 +127,12 @@ if __name__ == '__main__':
     parser.add_argument('-w', '--wav_path', type = str, help = '音频目录', default = "./out")
     parser.add_argument('-j', '--json_path', type = str, help = '生成的最终文件路径', default = "./name_py_hz_dur.txt")
     parser.add_argument('-d', '--dst_path', type = str, help = '生成的最终文件路径', default = "./name_py_hz_dur.txt")
+    parser.add_argument('-o', '--wav_out', type = str, help = '生成的最终文件路径', default = "./name_py_hz_dur.txt")
     args = parser.parse_args()
     wav_path = args.wav_path
     dst_path = args.dst_path
     json_path = args.json_path
+    wav_out = args.wav_out
     with open(json_path, 'r', encoding = "utf-8") as f:
         json_info = json.loads(f.read())
-    split(wav_path, json_info, './wav', dst_path)
+    split(wav_path, json_info, wav_out, dst_path)
