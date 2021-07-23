@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 import argparse
+import glob
 import os
 import json
 import threading
@@ -56,6 +57,49 @@ def words_to_duration(words):
     return duration
 
 
+def deal(wav_path, json_info, wav_out_dir, result_list, dst_path, index = 0):
+    num_error = 0
+    info_list = json_info["data"]["utterances"]
+    last_info = None
+    wav_audio = AudioSegment.from_mp3(wav_path).set_channels(1)  # 读取为拆分的音频
+    tn = gp2py.TextNormal('gp.vocab', 'py.vocab', add_sp1 = True, fix_er = True)
+    silent = AudioSegment.silent(150)  # 前后插入300毫秒静音
+    for info in info_list:
+        text = info["text"]  # 中文
+        if last_info is not None:
+            text = last_info["text"] + text
+
+        if not is_all_chinese(text):
+            num_error += 1
+            print(f"内容：{text}，含有非中文字符。总数量：{num_error}")
+            continue
+        end_time = info["end_time"]
+        if last_info is not None:
+            start_time = last_info["start_time"]
+        else:
+            start_time = info["start_time"]
+        duration = end_time - start_time  # 持续时间
+        # 如果该片段的时间小于2秒，合并到下一个片段中
+        if duration < 1 and last_info is None:
+            last_info = info
+            continue
+        seg_audio = silent + wav_audio[start_time:end_time] + silent
+        file_name = f"{index}_{text}"
+        seg_audio.export(os.path.join(wav_out_dir, file_name + ".wav"), format("wav"))
+        words = info["words"]
+        if last_info is not None:
+            words = last_info["words"] + words
+        duration_list = words_to_duration(words)
+        duration_info = " ".join(duration_list) + "|0.0|" + str('%.2f' % (float(duration) / 1000))
+        (py_list, gp_list) = tn.gp2py(text)
+        result_list.append(f"{file_name}|{py_list[0]}|{gp_list[0]}|{duration_info}")
+        last_info = None
+        index += 1
+    with open(dst_path, "w", encoding = "utf-8") as txt_f:
+        txt_f.write("\n".join(result_list))
+    return index
+
+
 class DealThread(threading.Thread):
     def __init__(self, wav_path, json_info, result_list, wav_out_dir, dst_path):
         threading.Thread.__init__(self)
@@ -66,73 +110,50 @@ class DealThread(threading.Thread):
         self.dst_path = dst_path
 
     def run(self):
-        print("开启线程：" + self.name)
-        num_error = 0
-        index = 0
-        info_list = self.json_info["data"]["utterances"]
-        last_info = None
-        wav_audio = AudioSegment.from_mp3(self.wav_path).set_channels(1)  # 读取为拆分的音频
-        tn = gp2py.TextNormal('gp.vocab', 'py.vocab', add_sp1 = True, fix_er = True)
-        silent = AudioSegment.silent(150)  # 前后插入300毫秒静音
-        for info in info_list:
-            text = info["text"]  # 中文
-            if last_info is not None:
-                text = last_info["text"] + text
-
-            if not is_all_chinese(text):
-                num_error += 1
-                print(f"内容：{text}，含有非中文字符。json文件：{self.name}，总数量：{num_error}")
-                continue
-            end_time = info["end_time"]
-            if last_info is not None:
-                start_time = last_info["start_time"]
-            else:
-                start_time = info["start_time"]
-            duration = end_time - start_time  # 持续时间
-            # 如果该片段的时间小于2秒，合并到下一个片段中
-            if duration < 1 and last_info is None:
-                last_info = info
-                continue
-            seg_audio = silent + wav_audio[start_time:end_time] + silent
-            file_name = f"{index}_{text}"
-            seg_audio.export(os.path.join(self.wav_out_dir, file_name + ".wav"), format("wav"))
-            words = info["words"]
-            if last_info is not None:
-                words = last_info["words"] + words
-            duration_list = words_to_duration(words)
-            duration_info = " ".join(duration_list) + "|0.0|" + str('%.2f' % (float(duration) / 1000))
-            (py_list, gp_list) = tn.gp2py(text)
-            self.result_list.append(f"{file_name}|{py_list[0]}|{gp_list[0]}|{duration_info}")
-            last_info = None
-            index += 1
-        print("退出线程：" + self.name)
-        with open(self.dst_path, "w", encoding = "utf-8") as txt_f:
-            txt_f.write("\n".join(self.result_list))
+        deal(self.wav_path, self.json_info, self.wav_out_dir, self.result_list, self.dst_path)
 
 
 def split(wav_path, json_info, wav_out_dir, dst_path):
     result_list = []
-    deal_Thread = DealThread(wav_path, json_info, result_list = result_list, wav_out_dir = wav_out_dir, dst_path = dst_path)
-    deal_Thread.start()
+    deal_thread = DealThread(wav_path, json_info, result_list = result_list, wav_out_dir = wav_out_dir, dst_path = dst_path)
+    deal_thread.start()
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    # parser.add_argument('-j', '--json_dir', type = str, help = 'json文件存放目录', default = "./workspace/json")
-    # parser.add_argument('-w', '--wav_dir', type = str, help = '音频目录', default = "./workspace/wav")
-    # parser.add_argument('-d', '--dst_path', type = str, help = '生成的最终文件路径', default = "./workspace/name_py_hz_dur.txt")
-    # parser.add_argument('-o', '--wav_out_dir', type = str, help = '切分之后的音频目录', default = "./workspace/out")
-    # parser.add_argument('-j', '--json_dir', type = str, help = 'json', default = ".")
-    # parser.add_argument('-w', '--wav_dir', type = str, help = '音频目录', default = ".")
-    parser.add_argument('-w', '--wav_path', type = str, help = '音频目录', default = "./out")
-    parser.add_argument('-j', '--json_path', type = str, help = '生成的最终文件路径', default = "./name_py_hz_dur.txt")
-    parser.add_argument('-d', '--dst_path', type = str, help = '生成的最终文件路径', default = "./name_py_hz_dur.txt")
-    parser.add_argument('-o', '--wav_out', type = str, help = '生成的最终文件路径', default = "./name_py_hz_dur.txt")
+    parser.add_argument('-j', '--json_dir', type = str, help = 'json文件存放目录', default = "./workspace/json")
+    parser.add_argument('-w', '--input_wav_dir', type = str, help = '音频目录', default = "./workspace/wav")
+    parser.add_argument('-d', '--dst_path', type = str, help = '生成的最终文件路径', default = "./workspace/name_py_hz_dur.txt")
+    parser.add_argument('-o', '--out_wav_dir', type = str, help = '切分之后的音频目录', default = "./workspace/out")
+    parser.add_argument('-t', '--input_wav_type', type = str, help = '输入音频的类型', default = ".mp3")
     args = parser.parse_args()
-    wav_path = args.wav_path
+    input_wav_dir = args.input_wav_dir
+    json_dir = args.json_dir
     dst_path = args.dst_path
-    json_path = args.json_path
-    wav_out = args.wav_out
-    with open(json_path, 'r', encoding = "utf-8") as f:
-        json_info = json.loads(f.read())
-    split(wav_path, json_info, wav_out, dst_path)
+    out_wav_dir = args.out_wav_dir
+    input_wav_type = args.input_wav_type
+    wav_files = glob.glob(os.path.join(input_wav_dir, "*" + input_wav_type))
+    json_files = glob.glob(os.path.join(json_dir, "*.json"))
+    result_list = []
+    index = 0
+    for root, dirs, files in os.walk(json_dir, topdown = False, followlinks = True):
+        for file in files:
+            (name, ext) = os.path.splitext(file)
+            if ext is not ".json":
+                continue
+            wav_path = os.path.join(input_wav_dir, name + input_wav_type)
+            if not os.path.exists(wav_path):
+                print(f"音频文件：{wav_path}，不存在")
+            try:
+                with open(os.path.join(root, file), 'r', encoding = "utf-8") as f:
+                    json_info = json.loads(f.read())
+            except:
+                print(f"json文件：{file}，读取失败")
+                continue
+
+            try:
+                index = deal(wav_path, json_info, out_wav_dir, result_list, dst_path, index)
+            except:
+                print(f"音频转换异常：{file}，读取失败")
+    with open(dst_path, "w", encoding = "utf-8") as txt_f:
+        txt_f.write("\n".join(result_list))

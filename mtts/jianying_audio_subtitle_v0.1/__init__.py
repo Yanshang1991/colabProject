@@ -3,6 +3,10 @@
 import json
 import os
 
+def add(index):
+    index += 1
+
+
 if __name__ == '__main__':
     # with open("aaa.json", 'r', encoding = 'utf-8') as f:
     #     json_info = json.loads(f.read())
@@ -15,6 +19,8 @@ if __name__ == '__main__':
     #         if ext == ".wav":
     #             if not os.path.exists(os.path.join(root, name + ".json")):
     #                 os.rename(os.path.join(root, file), os.path.join("/content/wav_2", file))
-    list = [1, 2]
-    list = [3, 4] + list
-    print(list)
+    index = 0
+    for i in range(10):
+        add(index)
+        print(index)
+    print(index)
