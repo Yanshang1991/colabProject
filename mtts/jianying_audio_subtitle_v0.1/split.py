@@ -112,7 +112,7 @@ class DealThread(threading.Thread):
 
 def split(wav_path, json_info, wav_out_dir, dst_path):
     result_list = []
-    deal_Thread = DealThread(wav_path, json_info, result_list = result_list, wav_out_dir = wav_out_dir)
+    deal_Thread = DealThread(wav_path, json_info, result_list = result_list, wav_out_dir = wav_out_dir, dst_path= dst_path)
     deal_Thread.start()
 
 
@@ -126,9 +126,11 @@ if __name__ == '__main__':
     # parser.add_argument('-w', '--wav_dir', type = str, help = '音频目录', default = ".")
     parser.add_argument('-w', '--wav_path', type = str, help = '音频目录', default = "./out")
     parser.add_argument('-j', '--json_path', type = str, help = '生成的最终文件路径', default = "./name_py_hz_dur.txt")
+    parser.add_argument('-d', '--dst_path', type = str, help = '生成的最终文件路径', default = "./name_py_hz_dur.txt")
     args = parser.parse_args()
     wav_path = args.wav_path
+    dst_path = args.dst_path
     json_path = args.json_path
     with open(json_path, 'r', encoding = "utf-8") as f:
         json_info = json.loads(f.read())
-    split(wav_path, json_info, './wav')
+    split(wav_path, json_info, './wav', dst_path)
