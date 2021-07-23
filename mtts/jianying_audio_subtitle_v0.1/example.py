@@ -14,13 +14,13 @@ def create_parser():
 
 def write_json_response(json_response, path):
     with open(path, 'w') as f:
-        f.write(json_response)
+        f.write(json.dumps(json_response))
 
 
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('-s', '--src_dir', type = str, help = '要是识别的音频文件目录', required = True)
+    parser.add_argument('-s', '--src_dir', type = str, help = '要是识别的音频文件目录', default = "./")
     parser.add_argument('-t', '--audio_type', type = str, help = '音频类型，默认mp3', default = ".mp3")
     args = parser.parse_args()
     src_dir = args.src_dir
