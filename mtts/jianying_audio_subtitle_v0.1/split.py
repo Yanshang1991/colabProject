@@ -117,20 +117,18 @@ def split(wav_path, json_info, wav_out_dir, dst_path):
 
 
 if __name__ == '__main__':
-    # parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser()
     # parser.add_argument('-j', '--json_dir', type = str, help = 'json文件存放目录', default = "./workspace/json")
     # parser.add_argument('-w', '--wav_dir', type = str, help = '音频目录', default = "./workspace/wav")
     # parser.add_argument('-d', '--dst_path', type = str, help = '生成的最终文件路径', default = "./workspace/name_py_hz_dur.txt")
     # parser.add_argument('-o', '--wav_out_dir', type = str, help = '切分之后的音频目录', default = "./workspace/out")
-    # # parser.add_argument('-j', '--json_dir', type = str, help = 'json', default = ".")
-    # # parser.add_argument('-w', '--wav_dir', type = str, help = '音频目录', default = ".")
-    # # parser.add_argument('-o', '--wav_out_dir', type = str, help = '音频目录', default = "./out")
-    # # parser.add_argument('-d', '--dst_path', type = str, help = '生成的最终文件路径', default = "./name_py_hz_dur.txt")
-    # args = parser.parse_args()
-    # json_dir = args.json_dir
-    # wav_dir = args.wav_dir
-    # dst_path = args.dst_path
-    # wav_out_dir = args.wav_out_dir
-    with open("53.json", 'r', encoding = "utf-8") as f:
+    # parser.add_argument('-j', '--json_dir', type = str, help = 'json', default = ".")
+    # parser.add_argument('-w', '--wav_dir', type = str, help = '音频目录', default = ".")
+    parser.add_argument('-w', '--wav_path', type = str, help = '音频目录', default = "./out")
+    parser.add_argument('-j', '--json_path', type = str, help = '生成的最终文件路径', default = "./name_py_hz_dur.txt")
+    args = parser.parse_args()
+    wav_path = args.wav_path
+    json_path = args.json_path
+    with open(json_path, 'r', encoding = "utf-8") as f:
         json_info = json.loads(f.read())
-    split('53.mp3', json_info, './wav')
+    split(wav_path, json_info, './wav')
