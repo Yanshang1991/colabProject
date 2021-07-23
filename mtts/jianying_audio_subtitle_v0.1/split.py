@@ -112,7 +112,7 @@ if __name__ == '__main__':
     result = []
     index = 0  # 文件的名称
     num_error = 0
-    silent = AudioSegment.silent(300)  # 前后插入300毫秒静音
+    silent = AudioSegment.silent(150)  # 前后插入300毫秒静音
     threads = []
     for root, dirs, files in os.walk(json_dir, topdown = False, followlinks = True):
         for file in files:
