@@ -159,7 +159,7 @@ if __name__ == '__main__':
             except:
                 print(f"json文件：{file}，读取失败")
                 continue
-            index = deal(wav_path = wav_path, json_info = json_info, wav_out_dir = out_wav_dir, result_list = result_list, dst_path = dst_path, index = index, split_audio = False)
+            index = deal(wav_path = wav_path, json_info = json_info, wav_out_dir = out_wav_dir, result_list = result_list, dst_path = dst_path, index = index, split_audio = True)
             print(f"处理完成，总数：{index}")
     with open(dst_path, "w", encoding = "utf-8") as txt_f:
         txt_f.write("\n".join(result_list))
