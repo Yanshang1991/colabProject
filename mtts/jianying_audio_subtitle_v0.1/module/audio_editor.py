@@ -126,7 +126,7 @@ def cut_audio(audio_info: AudioInfo, json_info, cut_wav_dir: str, cut_audio_type
         file_name = f"{audio_info.name()}_{str(index).zfill(4)}_{text}"
         if split_audio:
             seg_audio = silent + wav_audio[start_time:end_time] + silent
-            seg_audio.export(os.path.join(cut_wav_dir, file_name + cut_audio_type), format(cut_audio_type))
+            seg_audio.export(os.path.join(cut_wav_dir, file_name + cut_audio_type), format(cut_audio_type.split(".")[-3]))
         words = info["words"]
         if last_info is not None:
             words = last_info["words"] + words
