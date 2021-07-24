@@ -56,9 +56,6 @@ if __name__ == '__main__':
         config = yaml.safe_load(f)
     workspace = args.workspace
 
-    # requester = AudioSubtitleParser(config)
-    # json_response = requester.parse("/Users/ZhangBo/Documents/Python/colabProject/mtts/jianying_audio_subtitle_v0.1/module/audio_worksapce/joint/000.mp3")
-
     # 合成音频
     jointed_audio_dir = os.path.join(workspace, "joint")
     audio_info_list = audio_editor.joint_audio(raw_audio_dir = raw_audio_dir, jointed_audio_dir = jointed_audio_dir, raw_audio_type = raw_audio_type, jointed_audio_type = config["jointed_audio_type"],
@@ -78,14 +75,4 @@ if __name__ == '__main__':
         cut_thread.start()
         cut_thread.join()
 
-
-        # def cut():
-        #     audio_editor.cut_audio(audio_info = audio_info, json_info = json_response, out_wav_dir = os.path.join(workspace, "cut"), out_audio_type = config["out_audio_type"])
-        #
-        #
-        # print(f"开启线程切割音频{audio_info.name()}")
-        # # 开启线程切割音频
-        # try:
-        #     _thread.start_new_thread(cut, (f"线程：{audio_info.name()}", 2,))
-        # except:
-        #     print("Error: 无法启动线程")
+        # def cut():  #     audio_editor.cut_audio(audio_info = audio_info, json_info = json_response, out_wav_dir = os.path.join(workspace, "cut"), out_audio_type = config["out_audio_type"])  #  #  # print(f"开启线程切割音频{audio_info.name()}")  # # 开启线程切割音频  # try:  #     _thread.start_new_thread(cut, (f"线程：{audio_info.name()}", 2,))  # except:  #     print("Error: 无法启动线程")
