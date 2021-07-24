@@ -58,6 +58,8 @@ def words_to_duration(words):
 
 
 def deal(wav_path, json_info, wav_out_dir, result_list, dst_path, wav_name = "", index = 0, split_audio = True):
+    if not os.path.exists(wav_out_dir):
+        os.makedirs(wav_out_dir)
     num_error = 0
     info_list = json_info["data"]["utterances"]
     last_info = None
