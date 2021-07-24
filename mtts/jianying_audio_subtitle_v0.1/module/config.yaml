@@ -1,0 +1,35 @@
+# 转换的工作空间目录
+workspace: /Users/ZhangBo/Documents/Python/colabProject/mtts/jianying_audio_subtitle_v0.1/module/audio_worksapce
+
+# 原始音频格式
+raw_audio_type:
+
+# 输出的合成文件格式
+jointed_audio_type: .mp3
+
+# 合成文件时长
+jointed_audio_limit: 3600
+
+# 切割的音频类型
+cut_audio_type: .wav
+
+
+
+# 剪映接口签名参数
+upload_sign:
+  device_time: "1626958657"
+  tdid: "3958721115876654"
+  sign: "9ea624edbaf4993b326ed127069b8c3f"
+# 剪映接口签名参数
+audio_subtitle_submit:
+  device_time: "1627006156"
+  tdid: "473818730039"
+  sign: "544ae5c9ab1cf5a2b20b252cc34b9bac"
+# 剪映接口签名参数
+audio_subtitle_query:
+  device_time: "1627006291"
+  tdid: "473818730039"
+  sign: "7c8a506fd227811a227ab127adbf416f"
+
+    
+
