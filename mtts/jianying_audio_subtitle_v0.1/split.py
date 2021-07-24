@@ -113,7 +113,7 @@ class DealThread(threading.Thread):
         self.wav_name = wav_name
 
     def run(self):
-        deal(self.wav_path, self.json_info, self.wav_out_dir, self.result_list, self.dst_path)
+        deal(wav_path = self.wav_path, json_info = self.json_info, wav_out_dir = self.wav_out_dir, result_list = self.result_list, dst_path = self.dst_path, wav_name = self.wav_name)
 
 
 def split_(wav_path, json_info, wav_out_dir, dst_path, wav_name):
