@@ -152,7 +152,7 @@ if __name__ == '__main__':
                 continue
 
             try:
-                index = deal(wav_path, json_info, out_wav_dir, result_list, dst_path, index)
+                # index = deal(wav_path, json_info, out_wav_dir, result_list, dst_path, index)
                 print(f"处理完成，总数：{index}")
             except:
                 print(f"音频转换异常：{file}，读取失败")
