@@ -36,10 +36,16 @@ def _write_json_response():
         json.dump(json_response, j_f)
 
 
+class CutThread(threading.Thread):
+    def run(self) -> None:
+        audio_editor.cut_audio(audio_info = audio_info, json_info = json_response, out_wav_dir = os.path.join(workspace, "cut"), out_audio_type = config["out_audio_type"])
+
+
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     parser.add_argument('-c', '--config', type = str, help = '配置文件路径', default = r"./config.yaml")
+    parser.add_argument('-w', '--workspace', type = str, help = '工作目录控件', default = r"./workspace")
     parser.add_argument('-i', '--raw_audio_dir', type = str, help = '原始音频目录', default = "./wav")
     parser.add_argument('-t', '--raw_audio_type', type = str, help = '原始音频类型')
     args = parser.parse_args()
@@ -60,6 +66,7 @@ if __name__ == '__main__':
     print(f"合成音频数量：{len(audio_info_list)}")
 
     requester = AudioSubtitleParser(config)
+    threads = []
     for audio_info in audio_info_list:
         # 调用剪映接口进行语音识别
         json_response = requester.parse(audio_info.path)
@@ -67,10 +74,18 @@ if __name__ == '__main__':
         # 保存返回的json信息
         _write_json_response()
 
+        cut_thread = CutThread()
+        cut_thread.start()
+        cut_thread.join()
 
-        def cut():
-            audio_editor.cut_audio(audio_info = audio_info, json_info = json_response, out_wav_dir = os.path.join(workspace, "cut"), out_audio_type = config["out_audio_type"])
 
-
-        # 开启线程切割音频
-        _thread.start_new_thread(cut, (f"线程：{audio_info.name()}", 2,))
+        # def cut():
+        #     audio_editor.cut_audio(audio_info = audio_info, json_info = json_response, out_wav_dir = os.path.join(workspace, "cut"), out_audio_type = config["out_audio_type"])
+        #
+        #
+        # print(f"开启线程切割音频{audio_info.name()}")
+        # # 开启线程切割音频
+        # try:
+        #     _thread.start_new_thread(cut, (f"线程：{audio_info.name()}", 2,))
+        # except:
+        #     print("Error: 无法启动线程")

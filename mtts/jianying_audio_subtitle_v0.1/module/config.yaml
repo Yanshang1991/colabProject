@@ -1,6 +1,3 @@
-# 转换的工作空间目录
-workspace: /Users/ZhangBo/Documents/Python/colabProject/mtts/jianying_audio_subtitle_v0.1/module/audio_worksapce
-
 # 原始音频格式
 raw_audio_type:
 
