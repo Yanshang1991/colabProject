@@ -148,6 +148,8 @@ if __name__ == '__main__':
             wav_path = os.path.join(input_wav_dir, name + input_wav_type)
             if not os.path.exists(wav_path):
                 print(f"音频文件：{wav_path}，不存在")
+                continue
+
             try:
                 with open(os.path.join(root, file), 'r') as f:
                     json_info = json.load(f)
@@ -155,10 +157,7 @@ if __name__ == '__main__':
                 print(f"json文件：{file}，读取失败")
                 continue
 
-            try:
-                index = deal(wav_path, json_info, out_wav_dir, result_list, dst_path, index, split_audio)
-                print(f"处理完成，总数：{index}")
-            except:
-                print(f"音频转换异常：{file}，读取失败")
+            index = deal(wav_path, json_info, out_wav_dir, result_list, dst_path, index, split_audio)
+            print(f"处理完成，总数：{index}")
     with open(dst_path, "w", encoding = "utf-8") as txt_f:
         txt_f.write("\n".join(result_list))
