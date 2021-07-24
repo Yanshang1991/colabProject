@@ -57,11 +57,12 @@ def words_to_duration(words):
     return duration
 
 
-def deal(wav_path, json_info, wav_out_dir, result_list, dst_path, wav_name = "", index = 0):
+def deal(wav_path, json_info, wav_out_dir, result_list, dst_path, wav_name = "", index = 0, split_audio = True):
     num_error = 0
     info_list = json_info["data"]["utterances"]
     last_info = None
-    wav_audio = AudioSegment.from_mp3(wav_path).set_channels(1)  # 读取为拆分的音频
+    if split_audio:
+        wav_audio = AudioSegment.from_mp3(wav_path).set_channels(1)  # 读取为拆分的音频
     tn = gp2py.TextNormal('gp.vocab', 'py.vocab', add_sp1 = True, fix_er = True)
     silent = AudioSegment.silent(150)  # 前后插入300毫秒静音
     for info in info_list:
@@ -83,9 +84,10 @@ def deal(wav_path, json_info, wav_out_dir, result_list, dst_path, wav_name = "",
         if duration < 1 and last_info is None:
             last_info = info
             continue
-        seg_audio = silent + wav_audio[start_time:end_time] + silent
         file_name = f"{wav_name}_{index}_{text}"
-        seg_audio.export(os.path.join(wav_out_dir, file_name + ".wav"), format("wav"))
+        if split_audio:
+            seg_audio = silent + wav_audio[start_time:end_time] + silent
+            seg_audio.export(os.path.join(wav_out_dir, file_name + ".wav"), format("wav"))
         words = info["words"]
         if last_info is not None:
             words = last_info["words"] + words
@@ -127,6 +129,7 @@ if __name__ == '__main__':
     parser.add_argument('-d', '--dst_path', type = str, help = '生成的最终文件路径', default = "./workspace/name_py_hz_dur.txt")
     parser.add_argument('-o', '--out_wav_dir', type = str, help = '切分之后的音频目录', default = "./workspace/out")
     parser.add_argument('-t', '--input_wav_type', type = str, help = '输入音频的类型', default = ".mp3")
+    parser.add_argument('-p', '--split_audio', type = bool, help = '是否切分音频', default = True)
     args = parser.parse_args()
     input_wav_dir = args.input_wav_dir
     json_dir = args.json_dir
@@ -152,7 +155,7 @@ if __name__ == '__main__':
                 continue
 
             try:
-                # index = deal(wav_path, json_info, out_wav_dir, result_list, dst_path, index)
+                index = deal(wav_path, json_info, out_wav_dir, result_list, dst_path, index)
                 print(f"处理完成，总数：{index}")
             except:
                 print(f"音频转换异常：{file}，读取失败")
