@@ -54,7 +54,7 @@ if __name__ == '__main__':
     # 读取配置
     with open(args.config) as f:
         config = yaml.safe_load(f)
-    workspace = config["workspace"]
+    workspace = args.workspace
 
     # requester = AudioSubtitleParser(config)
     # json_response = requester.parse("/Users/ZhangBo/Documents/Python/colabProject/mtts/jianying_audio_subtitle_v0.1/module/audio_worksapce/joint/000.mp3")
