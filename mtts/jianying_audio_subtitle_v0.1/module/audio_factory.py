@@ -38,7 +38,7 @@ def _write_json_response():
 
 class CutThread(threading.Thread):
     def run(self) -> None:
-        audio_editor.cut_audio(audio_info = audio_info, json_info = json_response, out_wav_dir = os.path.join(workspace, "cut"), out_audio_type = config["out_audio_type"])
+        audio_editor.cut_audio(audio_info = audio_info, json_info = json_response, cut_wav_dir = os.path.join(workspace, "cut"), cut_audio_type = config["cut_audio_type"])
 
 
 if __name__ == '__main__':

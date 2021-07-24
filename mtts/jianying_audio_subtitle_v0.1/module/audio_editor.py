@@ -84,7 +84,7 @@ def _words_to_duration(words):
     return duration
 
 
-def cut_audio(audio_info: AudioInfo, json_info, out_wav_dir: str, out_audio_type: str = ".wav", split_audio = True, index = 0):
+def cut_audio(audio_info: AudioInfo, json_info, cut_wav_dir: str, cut_audio_type: str = ".wav", split_audio = True, index = 0):
     # 参数校验
     if not os.path.exists(audio_info.path):
         print(f"fail------，切分音频失败。{audio_info.path}，文件不存在！")
@@ -93,8 +93,8 @@ def cut_audio(audio_info: AudioInfo, json_info, out_wav_dir: str, out_audio_type
         print(f"fail------，切分音频失败。{audio_info.path}，对应的json数据异常！")
         print(json_info)
         return
-    if not os.path.exists(out_wav_dir):
-        os.makedirs(out_wav_dir)
+    if not os.path.exists(cut_wav_dir):
+        os.makedirs(cut_wav_dir)
 
     num_error = 0
     info_list = json_info["data"]["utterances"]
@@ -126,7 +126,7 @@ def cut_audio(audio_info: AudioInfo, json_info, out_wav_dir: str, out_audio_type
         file_name = f"{audio_info.name()}_{str(index).zfill(4)}_{text}"
         if split_audio:
             seg_audio = silent + wav_audio[start_time:end_time] + silent
-            seg_audio.export(os.path.join(out_wav_dir, file_name + out_audio_type), format(out_audio_type))
+            seg_audio.export(os.path.join(cut_wav_dir, file_name + cut_audio_type), format(cut_audio_type))
         words = info["words"]
         if last_info is not None:
             words = last_info["words"] + words
@@ -136,5 +136,5 @@ def cut_audio(audio_info: AudioInfo, json_info, out_wav_dir: str, out_audio_type
         result_list.append(f"{file_name}|{py_list[0]}|{gp_list[0]}|{duration_info}")
         last_info = None
         index += 1
-    with open(os.path.join(out_wav_dir, audio_info.name() + ".txt"), "w", encoding = "utf-8") as txt_f:
+    with open(os.path.join(cut_wav_dir, audio_info.name() + ".txt"), "w", encoding = "utf-8") as txt_f:
         txt_f.write("\n".join(result_list))
