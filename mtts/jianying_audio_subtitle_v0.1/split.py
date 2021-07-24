@@ -139,6 +139,9 @@ if __name__ == '__main__':
     split_audio = args.split_audio
     result_list = []
     index = 0
+    if not os.path.exists(out_wav_dir):
+        os.makedirs(out_wav_dir)
+
     for root, dirs, files in os.walk(json_dir, topdown = False, followlinks = True):
         for file in files:
             (name, ext) = os.path.splitext(file)
@@ -156,8 +159,7 @@ if __name__ == '__main__':
             except:
                 print(f"json文件：{file}，读取失败")
                 continue
-            print(split_audio)
-            index = deal(wav_path, json_info, out_wav_dir, result_list, dst_path, index, split_audio = False)
+            index = deal(wav_path = wav_path, json_info = json_info, wav_out_dir = out_wav_dir, result_list = result_list, dst_path = dst_path, index = index, split_audio = True)
             print(f"处理完成，总数：{index}")
     with open(dst_path, "w", encoding = "utf-8") as txt_f:
         txt_f.write("\n".join(result_list))
