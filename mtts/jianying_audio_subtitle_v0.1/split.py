@@ -149,8 +149,8 @@ if __name__ == '__main__':
             if not os.path.exists(wav_path):
                 print(f"音频文件：{wav_path}，不存在")
             try:
-                with open(os.path.join(root, file), 'r', encoding = "utf-8") as f:
-                    json_info = json.loads(f.read())
+                with open(os.path.join(root, file), 'r') as f:
+                    json_info = json.load(f)
             except:
                 print(f"json文件：{file}，读取失败")
                 continue
