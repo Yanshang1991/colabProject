@@ -137,6 +137,7 @@ if __name__ == '__main__':
     parser.add_argument('-t', '--text', type = str)
     args = parser.parse_args()
     text = args.text
+    text = "记得在喜马拉雅 app，含有非中文字符。"
     text = text.replace("，", ",").replace("。", ".")
     # '个小孩叫小杜,上街打醋又买布.买了布打了醋,回头看见鹰抓兔.放下布搁下醋,上前去追鹰和兔.飞了鹰跑了兔,洒了醋湿了布.'
     tn = TextNormal('gp.vocab', 'py.vocab', add_sp1 = True, fix_er = True)
@@ -146,5 +147,7 @@ if __name__ == '__main__':
     for py, gp in zip(py_list, gp_list):
         phases.append(f"text{index}" + "|" + py + '|' + gp + "|0")
         index += 1
-    with open("../text.txt", "wt") as f:
-        f.write("\n".join(phases))
+    print(phases)
+
+    # with open("../text.txt", "wt") as f:
+    #     f.write("\n".join(phases))

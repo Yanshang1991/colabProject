@@ -132,6 +132,7 @@ if __name__ == '__main__':
     parser.add_argument('-o', '--out_wav_dir', type = str, help = '切分之后的音频目录', default = "./workspace/out")
     parser.add_argument('-t', '--input_wav_type', type = str, help = '输入音频的类型', default = ".mp3")
     parser.add_argument('-p', '--split_audio', type = bool, help = '是否切分音频', default = True)
+    parser.add_argument('-i', '--start_index', type = int, help = '开始的下标', default = 0)
     args = parser.parse_args()
     input_wav_dir = args.input_wav_dir
     json_dir = args.json_dir
@@ -140,7 +141,7 @@ if __name__ == '__main__':
     input_wav_type = args.input_wav_type
     split_audio = args.split_audio
     result_list = []
-    index = 0
+    index = args.start_index
     if not os.path.exists(out_wav_dir):
         os.makedirs(out_wav_dir)
 

@@ -15,9 +15,8 @@ def create_parser():
 
 
 def write_json_response(json_response, path):
-    with open(path, 'w', encoding = "utf-8") as f:
+    with open(path, 'w') as f:
         json.dump(json_response, f)
-
 
 
 if __name__ == '__main__':
@@ -37,10 +36,7 @@ if __name__ == '__main__':
     for file in files:
         json_response = parser.parse(file)  # 调用剪映的接口，转换数据
         (name, _) = os.path.splitext(file)
-        write_json_response(json_response, name + ".json")
+        # write_json_response(json_response, name + ".json")
         print(f"{file}, 识别成功")
         name = name.split("/")[-1]
-        split.split_(file, json_response, os.path.join(src_dir, name), os.path.join(src_dir, name + ".txt"), name)
-        # 根据结果切分文件
-
-
+        split.split_(file, json_response, os.path.join(src_dir, name), os.path.join(src_dir, name + ".txt"), name)  # 根据结果切分文件
