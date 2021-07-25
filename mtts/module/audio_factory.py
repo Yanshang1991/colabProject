@@ -37,8 +37,10 @@ if __name__ == '__main__':
     parser.add_argument('-w', '--workspace', type = str, help = '工作目录控件', default = r"./example_workspace")
     parser.add_argument('-i', '--raw_audio_dir', type = str, help = '原始音频目录', default = "./example_audio")
     parser.add_argument('-t', '--raw_audio_type', type = str, help = '原始音频类型')
+    parser.add_argument('-f', '--force', type = bool, help = '重新转换', default = False)
     args = parser.parse_args()
     raw_audio_dir = args.raw_audio_dir
+    force = args.force
     assert os.path.exists(raw_audio_dir)
     raw_audio_type = args.raw_audio_type
     # 读取配置
@@ -49,7 +51,7 @@ if __name__ == '__main__':
     # 转换信息日志的文件名称
     audio_info_list_log_path = os.path.join(workspace, "audio_info_list.pkl")
     editor = audio_editor.AudioEditor(config = config, workspace_path = workspace)
-    if os.path.exists(audio_info_list_log_path):
+    if os.path.exists(audio_info_list_log_path) and not force:
         print("数据文件已经存在，读取数据...")
         with open(audio_info_list_log_path, "rb") as log_f:
             audio_info_list = pickle.load(log_f)
