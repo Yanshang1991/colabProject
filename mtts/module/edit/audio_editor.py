@@ -61,6 +61,7 @@ class AudioEditor:
         audio_info_list = []
         # 文件序号
         index = 0
+        limit = self.config["jointed_audio_limit"]
         for small_audio_info in small_audio_info_list:
             audio = AudioSegment.from_file(small_audio_info.path)
             small_audio_info.duration_seconds = audio.duration_seconds
@@ -69,9 +70,9 @@ class AudioEditor:
             else:
                 tar_audio += audio
 
-            print(f"当前文件时长：{audio.duration_seconds}")
+            print(f"当前文件时长：{audio.duration_seconds}, limit：{limit}")
 
-            if audio.duration_seconds > self.config["jointed_audio_limit"]:
+            if audio.duration_seconds > limit:
                 tar_audio_path = os.path.join(jointed_audio_dir, str(index).zfill(8) + jointed_audio_type)
                 print(f"开始写入合成的音频文件: {tar_audio_path}")
                 tar_audio.export(tar_audio_path, format(jointed_audio_type.split(".")[-1]))
