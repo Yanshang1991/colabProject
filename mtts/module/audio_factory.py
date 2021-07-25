@@ -15,7 +15,7 @@ import util.file_utils as fu
 
 
 def _write_json_response():
-    with open("./aaa.json", 'w') as j_f:
+    with open(audio_info.json_path(), 'w') as j_f:
         json.dump(json_response, j_f)
 
 
@@ -77,8 +77,10 @@ if __name__ == '__main__':
                 print(f"{audio_info.path}，开始调用剪映接口识别语音")
                 json_response = requester.parse(audio_info.path)
                 try:
+                    print(f"{audio_info.path}，开始写入json文件")
                     _write_json_response()
                     audio_info.json_record_complete = True
+                    print(f"{audio_info.path}，json文件写入成功")
                 except:
                     print(f"{audio_info.path}，json写入失败")
 
@@ -106,6 +108,9 @@ if __name__ == '__main__':
             break
 
     if is_all_complete:
+        zip_dst_dir = config["zip_file_path"]
+        if zip_dst_dir is None:
+            zip_dst_dir = workspace
         fu.zip_(zip_file_name = "data.zip", src = workspace, dst_dir = config["zip_file_path"])
 
     with open(audio_info_list_log_path, "wb") as log_f:
