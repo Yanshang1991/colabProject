@@ -111,7 +111,7 @@ if __name__ == '__main__':
         zip_dst_dir = config["zip_file_path"]
         if zip_dst_dir is None:
             zip_dst_dir = workspace
-        fu.zip_(zip_file_name = "data.zip", src = workspace, dst_dir = config["zip_file_path"])
+        fu.zip_(zip_file_name = "data.zip", src = workspace, dst_dir = zip_dst_dir)
 
     with open(audio_info_list_log_path, "wb") as log_f:
         pickle.dump(audio_info_list, log_f)
