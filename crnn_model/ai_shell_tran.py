@@ -59,7 +59,7 @@ def trans(dir, tar_dir):
     pinyin_list.sort()
     with open(os.path.join(tar_dir, "hanzi.txt"), 'wt') as F:
         F.write('\n'.join(hanzi_list))
-    with open(os.path.join(tar_dir, "pinyin.txt"), 'wt') as F:
+    with open(os.path.join(tar_dir, "edit.txt"), 'wt') as F:
         F.write('\n'.join(pinyin_list))
 
 

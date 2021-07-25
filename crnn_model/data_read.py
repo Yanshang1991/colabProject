@@ -131,7 +131,7 @@ class GetDataset(Dataset):
         else:
             for root, dirs, files in os.walk(label_path, topdown = False, followlinks = True):
                 for file in files:
-                    if file.endswith("pinyin.txt"):
+                    if file.endswith("edit.txt"):
                         self._get_label_info(os.path.join(root, file))
 
 

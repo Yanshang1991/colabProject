@@ -81,7 +81,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--model_path', type = str, default = r'/content/drive/MyDrive/t052416.pth', help = '模型路径')
-    parser.add_argument('--label_file', type = str, default = r'/content/drive/MyDrive/Dataset/dataset_crnn/pinyin.txt', help = '拼音标签路径')
+    parser.add_argument('--label_file', type = str, default = r'/content/drive/MyDrive/Dataset/dataset_crnn/edit.txt', help = '拼音标签路径')
     parser.add_argument('--label_file_hanzi', type = str, default = r'/content/drive/MyDrive/Dataset/dataset_crnn/hanzi.txt', help = '汉字标签路径')
     parser.add_argument('--phoneme_file', type = str, default = r'/content/project/crnn_model/dataset/phoneme_label.txt', help = '拼音标签路径')
     parser.add_argument('--predict_video_dir', type = str, default = r'/content/drive/MyDrive/Dataset/audio/aishell3/dev/37_5622', help = '要测试的wav文件目录')
