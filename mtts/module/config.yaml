@@ -5,7 +5,7 @@ raw_audio_type:
 jointed_audio_type: .mp3
 
 # 合成文件时长
-jointed_audio_limit: 3600
+jointed_audio_limit: 2000
 
 # 切割的音频类型
 cut_audio_type: .mp3
