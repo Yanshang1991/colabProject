@@ -6,7 +6,6 @@ import os
 import pickle
 import threading
 import time
-import zipfile
 
 import yaml
 from edit import audio_editor, audio_info

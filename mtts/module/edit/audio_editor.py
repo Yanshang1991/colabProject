@@ -69,6 +69,8 @@ class AudioEditor:
             else:
                 tar_audio += audio
 
+            print(f"当前文件时长：{audio.duration_seconds}")
+
             if audio.duration_seconds > self.config["jointed_audio_limit"]:
                 tar_audio_path = os.path.join(jointed_audio_dir, str(index).zfill(8) + jointed_audio_type)
                 tar_audio.export(tar_audio_path, format(jointed_audio_type.split(".")[-1]))
@@ -106,7 +108,6 @@ class AudioEditor:
             wav_audio = AudioSegment.from_mp3(audio_info.path).set_channels(1)  # 读取未拆分的音频
         tn = gp2py.TextNormal('./edit/gp.vocab', './edit/py.vocab', add_sp1 = True, fix_er = True)
         silent = AudioSegment.silent(150)  # 前后插入300毫秒静音
-        result_list = []
         for info in info_list:
             text = info["text"]  # 中文
             if last_info is not None:
