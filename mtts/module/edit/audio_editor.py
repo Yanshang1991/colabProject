@@ -70,9 +70,9 @@ class AudioEditor:
             else:
                 tar_audio += audio
 
-            print(f"当前文件时长：{audio.duration_seconds}, limit：{limit}")
+            print(f"当前文件时长：{tar_audio.duration_seconds}, limit：{limit}")
 
-            if audio.duration_seconds > limit:
+            if tar_audio.duration_seconds > limit:
                 tar_audio_path = os.path.join(jointed_audio_dir, str(index).zfill(8) + jointed_audio_type)
                 print(f"开始写入合成的音频文件: {tar_audio_path}")
                 tar_audio.export(tar_audio_path, format(jointed_audio_type.split(".")[-1]))
