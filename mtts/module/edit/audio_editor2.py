@@ -3,6 +3,7 @@
 import os
 import glob
 import time
+from concurrent.futures import ThreadPoolExecutor
 
 from pydub import AudioSegment
 
@@ -34,9 +35,13 @@ def _words_to_duration(words):
 
 
 class AudioEditor:
-    def __init__(self, config, workspace_path):
+    def __init__(self, config, workspace_path, pool: ThreadPoolExecutor):
         self.config = config
         self.workspace_path = workspace_path
+        self.pool = pool
+
+    def export_action(self, recognize_action):
+        recognize_action()
 
     def joint_audio(self, raw_audio_dir: str, raw_audio_type: str = None):
         """
@@ -76,6 +81,7 @@ class AudioEditor:
             if tar_audio.duration_seconds > limit:
                 tar_audio_path = os.path.join(jointed_audio_dir, str(index).zfill(8) + jointed_audio_type)
                 print(f"开始写入合成的音频文件: {tar_audio_path}")
+                self.pool.submit(self.export_action, )
                 start_time = time.time()
                 tar_audio.export(tar_audio_path, format(jointed_audio_type.split(".")[-1]))
                 audio_info = AudioInfo(path = tar_audio_path, duration_seconds = tar_audio.duration_seconds)
