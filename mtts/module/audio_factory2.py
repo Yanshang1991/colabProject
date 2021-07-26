@@ -32,7 +32,7 @@ if __name__ == '__main__':
 
     # 转换信息日志的文件名称
     audio_info_list_log_path = os.path.join(workspace, "audio_info_list.pkl")
-    pool = ThreadPoolExecutor(4)
+    pool = ThreadPoolExecutor(config["workers"])
     all_tasks = []
     editor = audio_editor2.AudioEditor(config = config, workspace_path = workspace, pool = pool, all_tasks = all_tasks)
     requester = AudioSubtitleParser(config)
