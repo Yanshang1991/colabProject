@@ -35,27 +35,49 @@ def _words_to_duration(words):
 
 
 class AudioEditor:
-    def __init__(self, config, workspace_path, pool: ThreadPoolExecutor):
+    def __init__(self, config, workspace_path, pool: ThreadPoolExecutor, all_tasks: list):
         self.config = config
         self.workspace_path = workspace_path
         self.pool = pool
+        self.all_tasks = all_tasks
+        self.jointed_audio_dir = os.path.join(self.workspace_path, "jointed")
+        self.jointed_audio_type = self.config["jointed_audio_type"]
+        if not os.path.exists(self.jointed_audio_dir):
+            os.makedirs(self.jointed_audio_dir, exist_ok = True)
+        self.cut_audio_type = self.config["cut_audio_type"]
+        self.cut_audio_dir = os.path.join(self.workspace_path, "cut")
+        if not os.path.exists(self.cut_audio_dir):
+            os.makedirs(self.cut_audio_dir, exist_ok = True)
 
-    def export_action(self, recognize_action):
-        recognize_action()
+    def joint_audio_by_info(self, audio_info: AudioInfo, recognize_action):
+        tar_audio = None
+        for sub_audio_info in audio_info.sub_audio_info_list:
+            if tar_audio is None:
+                tar_audio = AudioSegment.from_file(sub_audio_info.path)
+            else:
+                tar_audio += AudioSegment.from_file(sub_audio_info.path)
 
-    def joint_audio(self, raw_audio_dir: str, raw_audio_type: str = None):
+        def export_action():
+            print(f"开始写入合成的音频文件: {audio_info.path}")
+            start_time = time.time()
+            tar_audio.export(audio_info.path, format(self.jointed_audio_type.split(".")[-1]))
+            audio_info.joint_complete = True
+            print(f"success------文件：{audio_info.path}写入成功，时长：{audio_info.duration_seconds}秒，写入耗时：{str(time.time() - start_time)}")
+            print(f"{audio_info.path}，调用识别回调")
+            recognize_action(audio_info)
+
+        self.all_tasks.append(self.pool.submit(export_action))
+
+    def joint_audio(self, raw_audio_dir: str, recognize_action, raw_audio_type: str = None):
         """
         拼接音频
         :param raw_audio_dir: 音频文件所在目录
+        :param recognize_action: 音频转换完成，回调该方法，开始识别音频
         :param raw_audio_type: 输入音频类型，不传默认读取文件下所有的文件
         :return: 音频信息列表
         """
         # 参数校验
         assert os.path.exists(raw_audio_dir)
-        jointed_audio_dir = os.path.join(self.workspace_path, "jointed")
-        if not os.path.exists(jointed_audio_dir):
-            os.makedirs(jointed_audio_dir, exist_ok = True)
-        jointed_audio_type = self.config["jointed_audio_type"]
         tar_audio = None
 
         # 获取音频文件
@@ -68,40 +90,47 @@ class AudioEditor:
         # 文件序号
         index = 0
         limit = self.config["jointed_audio_limit"]
+        one_jointed_audio_info_list = []  # 一个合成音频的子音频信息，主要为了记录路径信息
+
+        def export_action(cur_index, cur_tar_audio, cur_one_jointed_audio_info_list: list):
+            tar_audio_path = os.path.join(self.jointed_audio_dir, str(cur_index).zfill(8) + self.jointed_audio_type)
+            audio_info = AudioInfo(path = tar_audio_path, duration_seconds = cur_tar_audio.duration_seconds, sub_audio_info_list = cur_one_jointed_audio_info_list, id = cur_index)
+            audio_info_list.append(audio_info)
+            print(f"开始写入合成的音频文件: {tar_audio_path}")
+            start_time = time.time()
+            cur_tar_audio.export(tar_audio_path, format(self.jointed_audio_type.split(".")[-1]))
+            audio_info.joint_complete = True
+            print(f"success------文件：{audio_info.path}写入成功，时长：{audio_info.duration_seconds}秒，写入耗时：{str(time.time() - start_time)}")
+            print(f"{audio_info.path}，调用识别回调")
+            recognize_action(audio_info)
+
         for small_audio_info in small_audio_info_list:
+            print(small_audio_info.path)
             audio = AudioSegment.from_file(small_audio_info.path)
             small_audio_info.duration_seconds = audio.duration_seconds
             if tar_audio is None:
                 tar_audio = audio
             else:
                 tar_audio += audio
+            one_jointed_audio_info_list.append(audio)
 
             print(f"当前文件时长：{tar_audio.duration_seconds}, limit：{limit}")
 
             if tar_audio.duration_seconds > limit:
-                tar_audio_path = os.path.join(jointed_audio_dir, str(index).zfill(8) + jointed_audio_type)
-                print(f"开始写入合成的音频文件: {tar_audio_path}")
-                self.pool.submit(self.export_action, )
-                start_time = time.time()
-                tar_audio.export(tar_audio_path, format(jointed_audio_type.split(".")[-1]))
-                audio_info = AudioInfo(path = tar_audio_path, duration_seconds = tar_audio.duration_seconds)
-                audio_info_list.append(audio_info)
+                self.all_tasks.append(self.pool.submit(export_action, index, tar_audio, one_jointed_audio_info_list))
                 index += 1
                 tar_audio = None
-                print(f"success------文件：{audio_info.path}写入成功，时长：{audio_info.duration_seconds}秒，写入耗时：{str(time.time() - start_time)}")
+                one_jointed_audio_info_list = []
 
         if tar_audio is not None:
-            start_time = time.time()
-            tar_audio_path = os.path.join(jointed_audio_dir, str(index).zfill(8) + jointed_audio_type)
-            print(f"开始写入合成的音频文件: {tar_audio_path}")
-            tar_audio.export(tar_audio_path, format(jointed_audio_type.split(".")[-1]))
-            audio_info = AudioInfo(path = tar_audio_path, duration_seconds = tar_audio.duration_seconds)
-            audio_info_list.append(audio_info)
-            print(f"success------文件：{audio_info.path}写入成功，时长：{audio_info.duration_seconds}秒，写入耗时：{str(time.time() - start_time)}")
+            self.all_tasks.append(self.pool.submit(export_action, index, tar_audio, one_jointed_audio_info_list))
+
         return audio_info_list
 
-    def cut_audio(self, audio_info: AudioInfo, json_info, result_list = [], split_audio = True, index = 0):
+    def cut_audio(self, audio_info: AudioInfo, json_info, result_list = None, split_audio = True, index = 0):
         # 参数校验
+        if result_list is None:
+            result_list = []
         if not os.path.exists(audio_info.path):
             print(f"fail------，切分音频失败。{audio_info.path}，文件不存在！")
             return
@@ -109,10 +138,6 @@ class AudioEditor:
             print(f"fail------，切分音频失败。{audio_info.path}，对应的json数据异常！")
             print(json_info)
             return
-        cut_wav_dir = os.path.join(self.workspace_path, "cut")
-        if not os.path.exists(cut_wav_dir):
-            os.makedirs(cut_wav_dir)
-        cut_audio_type = self.config["cut_audio_type"]
 
         num_error = 0
         info_list = json_info["data"]["utterances"]
@@ -143,7 +168,7 @@ class AudioEditor:
             file_name = f"{audio_info.name()}_{str(index).zfill(4)}_{text}"
             if split_audio:
                 seg_audio = silent + wav_audio[start_time:end_time] + silent
-                seg_audio.export(os.path.join(cut_wav_dir, file_name + cut_audio_type), format(cut_audio_type.split(".")[-1]))
+                seg_audio.export(os.path.join(self.cut_audio_dir, file_name + self.cut_audio_type), format(self.cut_audio_type.split(".")[-1]))
             words = info["words"]
             if last_info is not None:
                 words = last_info["words"] + words
@@ -155,3 +180,5 @@ class AudioEditor:
             index += 1
         with open(audio_info.cut_txt_path(), "w", encoding = "utf-8") as txt_f:
             txt_f.write("\n".join(result_list))
+        audio_info.cut_complete = True
+        audio_info.deal_complete = True

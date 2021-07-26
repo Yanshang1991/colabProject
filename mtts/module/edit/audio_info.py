@@ -6,15 +6,20 @@ import os
 
 class AudioInfo:
     error_seg = []
+    joint_complete = False
     json_record_complete = False
     cut_complete = False
     deal_complete = False
 
-    def __init__(self, path: str, duration_seconds: int = 0):
+    def __init__(self, path: str, duration_seconds: int = 0, sub_audio_info_list: list = None, id = None):
         # 文件路径
         self.path = path
         # 时长
         self.duration_seconds = duration_seconds
+        # 拼接成的音频列表
+        self.sub_audio_info_list = sub_audio_info_list
+        # 序列号
+        self.id = id
 
     def ext(self):
         """
