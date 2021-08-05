@@ -12,9 +12,9 @@ import numpy as np
 from audio_info import AudioInfo
 
 
-def _is_all_chinese(input_text):
+def _is_all_chinese(_input_text):
     # 检验是否全是中文字符
-    for _char in input_text:
+    for _char in _input_text:
         if not '\u4e00' <= _char <= '\u9fa5':
             return False
     return True
@@ -93,7 +93,7 @@ class AudioEditor:
         one_jointed_audio_info_list = []  # 一个合成音频的子音频信息，主要为了记录路径信息
 
         def export_action(cur_index, cur_tar_audio, cur_one_jointed_audio_info_list: list):
-            tar_audio_path = os.path.join(self.jointed_audio_dir, str(cur_index).zfill(8) + self.jointed_audio_type)
+            tar_audio_path = os.path.join(self.jointed_audio_dir, str(cur_index).zfill(3) + self.jointed_audio_type)
             audio_info = AudioInfo(path = tar_audio_path, duration_seconds = cur_tar_audio.duration_seconds, sub_audio_info_list = cur_one_jointed_audio_info_list, id = cur_index)
             audio_info_list.append(audio_info)
             print(f"开始写入合成的音频文件: {tar_audio_path}")
@@ -105,7 +105,7 @@ class AudioEditor:
             recognize_action(audio_info)
 
         for small_audio_info in small_audio_info_list:
-            print(small_audio_info.path)
+
             audio = AudioSegment.from_file(small_audio_info.path)
             small_audio_info.duration_seconds = audio.duration_seconds
             if tar_audio is None:
@@ -146,6 +146,7 @@ class AudioEditor:
             wav_audio = AudioSegment.from_mp3(audio_info.path).set_channels(1)  # 读取未拆分的音频
         tn = gp2py.TextNormal('./edit/gp.vocab', './edit/py.vocab', add_sp1 = True, fix_er = True)
         silent = AudioSegment.silent(150)  # 前后插入300毫秒静音
+        cur_result_list = []
         for info in info_list:
             text = info["text"]  # 中文
             if last_info is not None:
@@ -175,10 +176,12 @@ class AudioEditor:
             duration_list = _words_to_duration(words)
             duration_info = " ".join(duration_list) + "|0.0|" + str('%.2f' % (float(duration) / 1000))
             (py_list, gp_list) = tn.gp2py(text)
-            result_list.append(f"{file_name}|{py_list[0]}|{gp_list[0]}|{duration_info}")
+            text = f"{file_name}|{py_list[0]}|{gp_list[0]}|{duration_info}"
+            cur_result_list.append(text)
+            result_list.append(text)
             last_info = None
             index += 1
         with open(audio_info.cut_txt_path(), "w", encoding = "utf-8") as txt_f:
-            txt_f.write("\n".join(result_list))
+            txt_f.write("\n".join(cur_result_list))
         audio_info.cut_complete = True
         audio_info.deal_complete = True

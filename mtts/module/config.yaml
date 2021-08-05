@@ -5,13 +5,13 @@ raw_audio_type:
 jointed_audio_type: .mp3
 
 # 合成文件时长
-jointed_audio_limit: 3600
+jointed_audio_limit: 1000
 
 # 切割的音频类型
 cut_audio_type: .mp3
 
 # zipfile 路径
-zip_file_path:
+zip_file_path: /content/drive/MyDrive
 
 # 线程池数量
 workers: 40
