@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import os
 import glob
+import random
 import time
 from concurrent.futures import ThreadPoolExecutor
 from typing import List
@@ -77,10 +78,11 @@ class AudioEditor:
         if raw_audio_type is not None:
             file_match_path += raw_audio_type
         files = glob.glob(file_match_path)
-        audio_info_list = [AudioInfo(path=f) for f in files]
+        audio_info_list = [AudioInfo(path = f) for f in files]
         for audio_info in audio_info_list:
+            audio_info.joint_complete = True
             recognize_action(audio_info)
-
+        return audio_info_list
 
     def joint_audio(self, raw_audio_dir: str, recognize_action, raw_audio_type: str = None):
         """
@@ -142,10 +144,13 @@ class AudioEditor:
         return audio_info_list
 
     def _get_duration(self, jointed_info_list):
-        return jointed_info_list[-1]['end_time'] - jointed_info_list[0]['start_time']
+        end_time = jointed_info_list[-1]['end_time']
+        start_time = jointed_info_list[0]['start_time']
+        duration = end_time - start_time
+        return duration, start_time, end_time
 
     def _get_name(self, jointed_info_list):
-        all_text = None
+        all_text: str = None
         for info in jointed_info_list:
             text = info["text"]
             if all_text is None:
@@ -153,16 +158,21 @@ class AudioEditor:
             else:
                 all_text += ","
                 all_text += text
-
+        if all_text.endswith(","):
+            all_text = all_text[0:-1]
         return all_text
 
     def _get_duration_segment(self, jointed_info_list):
-        words = []
+        words = None
         for info in jointed_info_list:
-            words = words + info["words"]
+            if words is None:
+                words = info["words"]
+            else:
+                gap_start_time = words[-1]["end_time"]
+                gap_end_time = info["start_time"]
+                words.append({"start_time": gap_start_time, "end_time": gap_end_time})
+                words = words + info["words"]
         return _words_to_duration(words)
-
-
 
     def cut_audio(self, audio_info: AudioInfo, json_info, result_list = None, split_audio = True, index = 0):
         # 参数校验
@@ -171,76 +181,45 @@ class AudioEditor:
         if not os.path.exists(audio_info.path):
             print(f"fail------，切分音频失败。{audio_info.path}，文件不存在！")
             return
-        if json_info is None or json_info.get("data") is None or json_info.get("data").get("utterances") is None:
-            print(f"fail------，切分音频失败。{audio_info.path}，对应的json数据异常！")
-            print(json_info)
-            return
 
         num_error = 0
         info_list = json_info["data"]["utterances"]
-        last_info = None
         if split_audio:
-            wav_audio = AudioSegment.from_mp3(audio_info.path).set_channels(1)  # 读取未拆分的音频
+            wav_audio = AudioSegment.from_file(audio_info.path)  # 读取未拆分的音频
         tn = gp2py.TextNormal('./edit/gp.vocab', './edit/py.vocab', add_sp1 = True, fix_er = True)
         silent = AudioSegment.silent(150)  # 前后插入300毫秒静音
         jointed_info_list = None
+        cur_result_list = []
         for info in info_list:
+            if not _is_all_chinese(info["text"]):
+                num_error += 1
+                content = info["text"]
+                print(f"内容：{content}，含有非中文字符。总数量：{num_error}")
+                continue
+
             if jointed_info_list is None:
                 jointed_info_list = [info]
                 continue
             else:
-                duration = self._get_duration(self, jointed_info_list)
-                if duration / 1000 > 10: # 时间大于10秒，不再拼接
-                    text = self._get_name(self, jointed_info_list)
+                duration, start_time, end_time = self._get_duration(jointed_info_list)
+                if duration / 1000 > random.randint(5, 10):  # 时间大于10秒，不再拼接
+                    text = self._get_name(jointed_info_list)
                     file_name = f"{str(index).zfill(4)}_{text}"
                     if split_audio:
                         seg_audio = silent + wav_audio[start_time:end_time] + silent
-                        seg_audio.export(os.path.join(self.cut_audio_dir, file_name + self.cut_audio_type),
-                                         format(self.cut_audio_type.split(".")[-1]))
+                        seg_audio.export(os.path.join(self.cut_audio_dir, file_name + self.cut_audio_type), format(self.cut_audio_type.split(".")[-1]))
 
-
-                    duration_list = self._get_duration_segment(self, jointed_info_list)
+                    duration_list = self._get_duration_segment(jointed_info_list)
                     duration_info = " ".join(duration_list) + "|0.0|" + str('%.2f' % (float(duration) / 1000))
                     (py_list, gp_list) = tn.gp2py(text)
-                    result_list.append(f"{file_name}|{py_list[0]}|{gp_list[0]}|{duration_info}")
+                    text_info = f"{file_name}|{py_list[0]}|{gp_list[0]}|{duration_info}"
+                    result_list.append(text_info)
+                    cur_result_list.append(text_info)
                     jointed_info_list = None
+                    index += 1
                 else:
                     jointed_info_list.append(info)
 
-
-            text = info["text"]  # 中文
-            if last_info is not None:
-                text = last_info["text"] + text
-
-            if not _is_all_chinese(text):
-                num_error += 1
-                print(f"内容：{text}，含有非中文字符。总数量：{num_error}")
-                continue
-            end_time = info["end_time"]
-            if last_info is not None:
-                start_time = last_info["start_time"]
-            else:
-                start_time = info["start_time"]
-            duration = end_time - start_time  # 持续时间
-            # 如果该片段的时间小于2秒，合并到下一个片段中
-            if duration < 1.5 and last_info is None:
-                last_info = info
-                continue
-            file_name = f"{audio_info.name()}_{str(index).zfill(4)}_{text}"
-            if split_audio:
-                seg_audio = silent + wav_audio[start_time:end_time] + silent
-                seg_audio.export(os.path.join(self.cut_audio_dir, file_name + self.cut_audio_type), format(self.cut_audio_type.split(".")[-1]))
-            words = info["words"]
-            if last_info is not None:
-                words = last_info["words"] + words
-            duration_list = _words_to_duration(words)
-            duration_info = " ".join(duration_list) + "|0.0|" + str('%.2f' % (float(duration) / 1000))
-            (py_list, gp_list) = tn.gp2py(text)
-            text = f"{file_name}|{py_list[0]}|{gp_list[0]}|{duration_info}"
-            cur_result_list.append(text)
-            result_list.append(text)
-            last_info = None
-            index += 1
         with open(audio_info.cut_txt_path(), "w", encoding = "utf-8") as txt_f:
             txt_f.write("\n".join(cur_result_list))
         audio_info.cut_complete = True

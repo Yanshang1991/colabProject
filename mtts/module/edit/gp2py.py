@@ -84,7 +84,8 @@ class TextNormal:
 
     def gp2py(self, gp_text: str) -> List[str]:
 
-        gp_sent_list, tokens = self._split2sent(gp_text)
+        # gp_sent_list, tokens = self._split2sent(gp_text)
+        gp_sent_list = [gp_text]
         py_sent_list = []
         for sent in gp_sent_list:
             pys = []
@@ -104,6 +105,7 @@ class TextNormal:
 
         if self.add_sil:
             gp_sent_list = ['sil ' + ' '.join(list(gp)) + ' sil' for gp in gp_sent_list]
+            gp_sent_list = [gp.replace(',', "sp1").replace('.', "sp1").replace("，", "sp1").replace("。", "sp1") for gp in gp_sent_list]
         else:
             gp_sent_list = [' '.join(list(gp)) for gp in gp_sent_list]
 
@@ -137,7 +139,7 @@ if __name__ == '__main__':
     parser.add_argument('-t', '--text', type = str)
     args = parser.parse_args()
     text = args.text
-    text = "记得在喜马拉雅 app，含有非中文字符。"
+    text = "个小孩叫小杜上街打醋又买布买了布打了醋回头看见鹰抓兔放下布搁下醋上前去追鹰和兔飞了鹰跑了兔洒了醋湿了布"
     text = text.replace("，", ",").replace("。", ".")
     # '个小孩叫小杜,上街打醋又买布.买了布打了醋,回头看见鹰抓兔.放下布搁下醋,上前去追鹰和兔.飞了鹰跑了兔,洒了醋湿了布.'
     tn = TextNormal('gp.vocab', 'py.vocab', add_sp1 = True, fix_er = True)
@@ -149,5 +151,4 @@ if __name__ == '__main__':
         index += 1
     print(phases)
 
-    # with open("../text.txt", "wt") as f:
-    #     f.write("\n".join(phases))
+    # with open("../text.txt", "wt") as f:  #     f.write("\n".join(phases))

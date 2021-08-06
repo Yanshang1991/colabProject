@@ -14,7 +14,7 @@ cut_audio_type: .mp3
 zip_file_path: /content/drive/MyDrive
 
 # 线程池数量
-workers: 40
+workers: 4
 
 
 

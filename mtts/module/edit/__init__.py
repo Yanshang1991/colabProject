@@ -10,8 +10,6 @@ def do_action(action):
 
 
 if __name__ == '__main__':
-    def my_action():
-        print("do_action")
-
-
-    do_action(my_action)
+    ss:str = "adawda,"
+    if ss.endswith(","):
+        print(ss[0:-1])

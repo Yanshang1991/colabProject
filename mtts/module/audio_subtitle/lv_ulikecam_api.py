@@ -61,7 +61,7 @@ def audio_subtitle_query(id, device_time, tdid, sign):
             audio_subtitle_query(id, device_time, tdid, sign)
         else:
             print(f"剪映，query接口响应\n{rsp.text}")
-            return rsp.text
+            return json_response
     elif rsp.status_code == 504:
         print("剪映，query接口504，重新发起请求")
         time.sleep(1)
