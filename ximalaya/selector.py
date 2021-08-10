@@ -11,6 +11,9 @@ def read_from_csv(csv_path: str) -> List:
 
 
 if __name__ == '__main__':
+
+
+
     path = f"./一禅575-714.csv"
     # row_list = read_from_csv(path)
     url_list = []

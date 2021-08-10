@@ -81,7 +81,8 @@ class AudioEditor:
         audio_info_list = [AudioInfo(path = f) for f in files]
         for audio_info in audio_info_list:
             audio_info.joint_complete = True
-            recognize_action(audio_info)
+            self.all_tasks.append(self.pool.submit(recognize_action, audio_info))
+            # recognize_action(audio_info)
         return audio_info_list
 
     def joint_audio(self, raw_audio_dir: str, recognize_action, raw_audio_type: str = None):
