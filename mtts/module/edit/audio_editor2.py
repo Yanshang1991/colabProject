@@ -225,3 +225,4 @@ class AudioEditor:
             txt_f.write("\n".join(cur_result_list))
         audio_info.cut_complete = True
         audio_info.deal_complete = True
+        print(f"{audio_info.path}，切分完成")
