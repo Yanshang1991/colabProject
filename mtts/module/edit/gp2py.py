@@ -151,4 +151,4 @@ if __name__ == '__main__':
         index += 1
     print(phases)
 
-    # with open("../text.txt", "wt") as f:  #     f.write("\n".join(phases))
+    # with open("../input.txt", "wt") as f:  #     f.write("\n".join(phases))
