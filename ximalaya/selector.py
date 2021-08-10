@@ -11,7 +11,7 @@ def read_from_csv(csv_path: str) -> List:
 
 
 if __name__ == '__main__':
-    path = f"./一禅715～814.csv"
+    path = f"./一禅575-714.csv"
     # row_list = read_from_csv(path)
     url_list = []
     with open(path, 'r') as csv_file:
@@ -23,7 +23,7 @@ if __name__ == '__main__':
                 url = row[0]
                 if url not in url_list:
                     url_list.append(row[0])
-    index = 0
+    index = 84
     for url in url_list:
-        du.single(url, f"./data2", str(index) + ".m4a")
+        du.single(url, f"./data", str(index) + ".m4a")
         index += 1
