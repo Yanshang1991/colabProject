@@ -81,8 +81,7 @@ class AudioEditor:
         audio_info_list = [AudioInfo(path = f) for f in files]
         for audio_info in audio_info_list:
             audio_info.joint_complete = True
-            self.all_tasks.append(self.pool.submit(recognize_action, audio_info))
-            # recognize_action(audio_info)
+            self.all_tasks.append(self.pool.submit(recognize_action, audio_info))  # recognize_action(audio_info)
         return audio_info_list
 
     def joint_audio(self, raw_audio_dir: str, recognize_action, raw_audio_type: str = None):
@@ -203,7 +202,11 @@ class AudioEditor:
                 continue
             else:
                 duration, start_time, end_time = self._get_duration(jointed_info_list)
-                if duration / 1000 > random.randint(5, 10):  # 时间大于10秒，不再拼接
+                split_limit: int = self.config["split_limit"]
+                if not split_limit == 0:
+                    split_limit = random.randint(split_limit, split_limit + 2)
+
+                if duration / 1000 > split_limit:  # 时间大于10秒，不再拼接
                     text = self._get_name(jointed_info_list)
                     file_name = f"{str(index).zfill(4)}_{text}"
                     if split_audio:
