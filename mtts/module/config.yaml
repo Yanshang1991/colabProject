@@ -20,7 +20,7 @@ workers_request: 8
 workers: 12
 
 # 切分音频的时长，等于0时，不合并音频
-split_limit: 4
+split_limit: 0
 
 
 
