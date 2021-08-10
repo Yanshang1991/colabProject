@@ -8,10 +8,13 @@ jointed_audio_type: .mp3
 jointed_audio_limit: 1000
 
 # 切割的音频类型
-cut_audio_type: .mp3
+cut_audio_type: .wav
 
 # zipfile 路径
 zip_file_path: /content/drive/MyDrive
+
+# 获取字幕的线程数量
+workers_request: 1
 
 # 线程池数量
 workers: 4

@@ -194,7 +194,7 @@ class AudioEditor:
             if not _is_all_chinese(info["text"]):
                 num_error += 1
                 content = info["text"]
-                print(f"内容：{content}，含有非中文字符。总数量：{num_error}")
+                # print(f"内容：{content}，含有非中文字符。总数量：{num_error}")
                 continue
 
             if jointed_info_list is None:
