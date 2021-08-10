@@ -14,10 +14,10 @@ cut_audio_type: .wav
 zip_file_path: /content/drive/MyDrive
 
 # 获取字幕的线程数量
-workers_request: 4
+workers_request: 8
 
 # 线程池数量
-workers: 8
+workers: 12
 
 # 切分音频的时长，等于0时，不合并音频
 split_limit: 4
