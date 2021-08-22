@@ -39,7 +39,7 @@ class averager(object):
 
 def oneHot(v, v_length, nc):
     batchSize = v_length.size(0)
-    maxLength = v_length.max()
+    maxLength = v_length.max_len()
     v_onehot = torch.FloatTensor(batchSize, maxLength, nc).fill_(0)
     acc = 0
     for i in range(batchSize):
@@ -56,7 +56,7 @@ def loadData(v, data):
 
 def prettyPrint(v):
     print('Size {0}, Type: {1}'.format(str(v.size()), v.data.type()))
-    print('| Max: %f | Min: %f | Mean: %f' % (v.max().data[0], v.min().data[0],
+    print('| Max: %f | Min: %f | Mean: %f' % (v.max_len().data[0], v.min().data[0],
                                               v.mean().data[0]))
 
 

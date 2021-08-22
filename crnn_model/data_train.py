@@ -102,7 +102,7 @@ def val(net, dataset, criterion, max_iter = 100):
         loss_avg.add(cost)
         loss_avg.reset()
 
-        _, pred_result = preds.max(2)
+        _, pred_result = preds.max_len(2)
         # pred_result = pred_result.squeeze(2)
         pred_result = pred_result.transpose(1, 0)
         pred_result = pred_result.contiguous().view(-1)

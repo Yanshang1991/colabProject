@@ -193,7 +193,7 @@ if __name__ == '__main__':
     preds=model(testImg)
     preds_size = torch.IntTensor([preds.size(0)])
 
-    _, pred_result = preds.max(2)
+    _, pred_result = preds.max_len(2)
     # pred_result = pred_result.squeeze(2)
     # pred_result = pred_result.transpose(1, 0).contiguous().view(-1)
     pred_result = pred_result.transpose(1, 0).view(-1)

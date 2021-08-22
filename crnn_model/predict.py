@@ -140,7 +140,7 @@ if __name__ == '__main__':
         # 用模型对频谱图进行预测
         preds = model(testImg)
         preds_size = torch.IntTensor([preds.size(0)])
-        _, pred_result = preds.max(2)
+        _, pred_result = preds.max_len(2)
         pred_result = pred_result.transpose(1, 0).view(-1)
         sim_preds, _ = converter.decodePhn(pred_result.data, preds_size.data, raw = False)
         str1 = ' '.join(sim_preds)

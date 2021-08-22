@@ -40,11 +40,7 @@ def many(urls, tar_dir = "/content/drive/MyDrive/Download/", mul_thread = False)
 	print("下载结束")
 
 
-def single(url, tar_dir = "/content/drive/MyDrive/Download/", thread_name = ""):
-	if not tar_dir.endswith("/"):
-		tar_dir = tar_dir + "/"
-	if not os.path.exists(tar_dir):  # 如果下载目录不存在创建下载目录
-		os.mkdir(tar_dir)
+def single(url, tar_dir, name):
 
 	start = time.time()  # 记录开始时间
 	response = requests.get(url, stream = True)  # 读取文件
@@ -54,11 +50,11 @@ def single(url, tar_dir = "/content/drive/MyDrive/Download/", thread_name = ""):
 
 	if response.status_code == 200:  # 请求成功
 		print("Start download, [File size]:{size:.2f} MB".format(size = content_size / chunk_size / 1024))
-		filepath = tar_dir + os.path.basename(urlparse(url).path)  # 文件的存储路径
+		filepath = os.path.join(tar_dir, name)  # 文件的存储路径
 		with open(filepath, "wb") as file:
 			for data in response.iter_content(chunk_size = chunk_size):
 				file.write(data)
 				size += len(data)
-				print('\r' + '%s [下载进度]:%s%.2f%%' % (thread_name, '>' * int(size * 50 / content_size), float(size / content_size * 100)), end = ' ')
+				print('\r' + '%s [下载进度]:%s%.2f%%' % (name, '>' * int(size * 50 / content_size), float(size / content_size * 100)), end = ' ')
 		end = time.time()  # 下载结束时间
 		print('Download completed!,times: %.2f秒' % (end - start))  # 输出下载用时时间
