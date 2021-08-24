@@ -5,13 +5,14 @@ import glob
 import random
 import time
 from concurrent.futures import ThreadPoolExecutor
-from typing import List
 
 from pydub import AudioSegment
 
 import gp2py
 import numpy as np
 from audio_info import AudioInfo
+import threading
+
 
 
 def _is_all_chinese(_input_text):
@@ -48,6 +49,7 @@ class AudioEditor:
             os.makedirs(self.jointed_audio_dir, exist_ok = True)
         self.cut_audio_type = self.config["cut_audio_type"]
         self.cut_audio_dir = os.path.join(self.workspace_path, "cut")
+        self.index = 0
         if not os.path.exists(self.cut_audio_dir):
             os.makedirs(self.cut_audio_dir, exist_ok = True)
 
@@ -211,7 +213,8 @@ class AudioEditor:
                     file_name = f"{str(index).zfill(4)}_{text}"
                     if split_audio:
                         seg_audio = silent + wav_audio[start_time:end_time] + silent
-                        seg_audio.export(os.path.join(self.cut_audio_dir, file_name + self.cut_audio_type), format(self.cut_audio_type.split(".")[-1]))
+                        index += 1
+                        seg_audio.export(os.path.join(self.cut_audio_dir, str(index).zfill(8) + self.cut_audio_type), format(self.cut_audio_type.split(".")[-1]))
 
                     duration_list = self._get_duration_segment(jointed_info_list)
                     duration_info = " ".join(duration_list) + "|0.0|" + str('%.2f' % (float(duration) / 1000))
