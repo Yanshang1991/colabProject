@@ -178,6 +178,7 @@ class AudioEditor:
 
     def cut_audio(self, audio_info: AudioInfo, json_info, result_list = None, split_audio = True, index = 0):
         # 参数校验
+        self.index += 1
         if result_list is None:
             result_list = []
         if not os.path.exists(audio_info.path):
@@ -210,11 +211,10 @@ class AudioEditor:
 
                 if duration / 1000 > split_limit:  # 时间大于10秒，不再拼接
                     text = self._get_name(jointed_info_list)
-                    file_name = f"{str(index).zfill(4)}_{text}"
+                    file_name = f"{str(1000 * self.index + index).zfill(4)}_{text}"
                     if split_audio:
                         seg_audio = silent + wav_audio[start_time:end_time] + silent
-                        index += 1
-                        seg_audio.export(os.path.join(self.cut_audio_dir, str(index).zfill(8) + self.cut_audio_type), format(self.cut_audio_type.split(".")[-1]))
+                        seg_audio.export(os.path.join(self.cut_audio_dir, file_name + self.cut_audio_type), format(self.cut_audio_type.split(".")[-1]))
 
                     duration_list = self._get_duration_segment(jointed_info_list)
                     duration_info = " ".join(duration_list) + "|0.0|" + str('%.2f' % (float(duration) / 1000))
