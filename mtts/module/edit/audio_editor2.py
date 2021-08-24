@@ -14,7 +14,6 @@ from audio_info import AudioInfo
 import threading
 
 
-
 def _is_all_chinese(_input_text):
     # 检验是否全是中文字符
     for _char in _input_text:
@@ -72,7 +71,7 @@ class AudioEditor:
 
         self.all_tasks.append(self.pool.submit(export_action))
 
-    def gen_audio_info(self, raw_audio_dir: str, recognize_action, raw_audio_type: str = None):
+    def gen_audio_info(self, raw_audio_dir: str, recognize_action, raw_audio_type: str = None, cut_audio_dir = None, cut_audio_type = None):
         # 参数校验
         assert os.path.exists(raw_audio_dir)
         # 获取音频文件
@@ -80,7 +79,7 @@ class AudioEditor:
         if raw_audio_type is not None:
             file_match_path += raw_audio_type
         files = glob.glob(file_match_path)
-        audio_info_list = [AudioInfo(path = f) for f in files]
+        audio_info_list = [AudioInfo(path = f, cut_audio_dir = cut_audio_dir, cut_audio_type = cut_audio_type) for f in files]
         for audio_info in audio_info_list:
             audio_info.joint_complete = True
             self.all_tasks.append(self.pool.submit(recognize_action, audio_info))  # recognize_action(audio_info)
@@ -188,7 +187,7 @@ class AudioEditor:
         num_error = 0
         info_list = json_info["data"]["utterances"]
         if split_audio:
-            wav_audio = AudioSegment.from_file(audio_info.path)  # 读取未拆分的音频
+            wav_audio = AudioSegment.from_file(audio_info.cut_file_path())  # 读取未拆分的音频
         tn = gp2py.TextNormal('./edit/gp.vocab', './edit/py.vocab', add_sp1 = True, fix_er = True)
         silent = AudioSegment.silent(150)  # 前后插入300毫秒静音
         jointed_info_list = None

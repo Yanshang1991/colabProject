@@ -11,15 +11,24 @@ class AudioInfo:
     cut_complete = False
     deal_complete = False
 
-    def __init__(self, path: str, duration_seconds: int = 0, sub_audio_info_list: list = None, id = None):
+    def __init__(self, path: str, duration_seconds: int = 0, sub_audio_info_list: list = None, id = None, cut_audio_dir = None, cut_audio_type = ""):
         # 文件路径
         self.path = path
+        # 剪切文件目录
+        self.cut_audio_dir = cut_audio_dir
         # 时长
         self.duration_seconds = duration_seconds
         # 拼接成的音频列表
         self.sub_audio_info_list = sub_audio_info_list
         # 序列号
         self.id = id
+        self.cut_audio_type = cut_audio_type
+
+    def cut_file_path(self):
+        if self.cut_audio_dir is None:
+            return self.path
+        else:
+            return os.path.join(self.cut_audio_dir, os.path.basename(self.path).split(".")[0] + self.cut_audio_type)
 
     def ext(self):
         """
