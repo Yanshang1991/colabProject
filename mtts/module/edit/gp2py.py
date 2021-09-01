@@ -84,7 +84,7 @@ class TextNormal:
 
     def gp2py(self, gp_text: str) -> List[str]:
 
-        # gp_sent_list, tokens = self._split2sent(gp_text)
+        gp_sent_list, tokens = self._split2sent(gp_text)
         gp_sent_list = [gp_text]
         py_sent_list = []
         for sent in gp_sent_list:
