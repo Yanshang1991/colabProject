@@ -25,10 +25,11 @@ class AudioInfo:
         self.cut_audio_type = cut_audio_type
 
     def cut_file_path(self):
-        if self.cut_audio_dir is None:
-            return self.path
-        else:
-            return os.path.join(self.cut_audio_dir, os.path.basename(self.path).split(".")[0] + self.cut_audio_type)
+        return self.path
+        # if self.cut_audio_dir is None:
+        #     return self.path
+        # else:
+        #     return os.path.join(self.cut_audio_dir, os.path.basename(self.path).split(".")[0] + self.cut_audio_type)
 
     def ext(self):
         """
