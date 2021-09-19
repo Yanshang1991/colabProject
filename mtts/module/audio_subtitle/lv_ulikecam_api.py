@@ -42,7 +42,7 @@ def audio_subtitle_submit(audio, device_time, tdid, sign):
         raise RuntimeError(rsp.text)
 
 
-def audio_subtitle_query(id, device_time, tdid, sign):
+def audio_subtitle_query(id, device_time, tdid, sign, retry_time = 20):
     headers = HEADERS.copy()
     headers['device-time'] = device_time
     headers['tdid'] = tdid
@@ -52,19 +52,20 @@ def audio_subtitle_query(id, device_time, tdid, sign):
     data = json.dumps(data, separators = (',', ':'))
 
     rsp = requests.post(HOST + '/lv/v1/audio_subtitle/query', headers = headers, data = data)
-
+    retry_time -= 1
     if rsp.status_code == 200:
         json_response = json.loads(rsp.text)
         if not json_response["errmsg"] == "success":
             print("剪映，query接口获取内容为空，重新发起请求")
-            time.sleep(1)
-            audio_subtitle_query(id, device_time, tdid, sign)
+            time.sleep(5)
+            if retry_time > 0:
+                audio_subtitle_query(id, device_time, tdid, sign, retry_time = retry_time)
         else:
             # print(f"剪映，query接口响应\n{rsp.text}")
             return json_response
     elif rsp.status_code == 504:
         print("剪映，query接口504，重新发起请求")
         time.sleep(1)
-        audio_subtitle_query(id, device_time, tdid, sign)
+        audio_subtitle_query(id, device_time, tdid, sign, retry_time = retry_time)
     else:
         raise RuntimeError(rsp.text)
